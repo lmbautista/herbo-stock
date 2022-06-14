@@ -71,4 +71,8 @@ group :test do
   gem "webdrivers"
 end
 
+# Linter
+gem "rubocop", require: false
+gem "rubocop-rails"
+
 gem 'shopify_app', '~>19.0.1'
