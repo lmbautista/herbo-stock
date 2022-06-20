@@ -158,7 +158,7 @@ module V1
           "active"
         end
 
-        def as_json # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+        def payload # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
           {
             "Handle" => handle,
             "Title" => title,

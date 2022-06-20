@@ -302,12 +302,12 @@ module V1
           assert_equal expected_status, adapter.status
         end
 
-        test "#as_json" do
+        test "#payload" do
           expected_payload = "8026067353872220bd740c4105398332"
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
-          assert_equal expected_payload, Digest::MD5.hexdigest(adapter.as_json.to_json)
+          assert_equal expected_payload, Digest::MD5.hexdigest(adapter.payload.to_json)
         end
 
         private
