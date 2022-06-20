@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_14_141304) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_20_172834) do
+  create_table "audits", force: :cascade do |t|
+    t.string "operation_id", null: false
+    t.text "raw_params", null: false
+    t.string "status", null: false
+    t.datetime "started_at"
+    t.datetime "succeeded_at"
+    t.datetime "failed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "shops", force: :cascade do |t|
     t.string "shopify_domain", null: false
     t.string "shopify_token", null: false
