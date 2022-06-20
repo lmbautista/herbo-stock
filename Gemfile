@@ -75,10 +75,14 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+  gem "webmock"
 end
 
 # Linter
 gem "rubocop", require: false
 gem "rubocop-rails"
+
+# HTTP client
+gem "rest-client"
 
 gem "shopify_app", "~>19.0.1"
