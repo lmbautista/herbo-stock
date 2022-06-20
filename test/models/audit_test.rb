@@ -48,4 +48,15 @@ class AuditTest < ActiveSupport::TestCase
     assert audit.invalid?
     assert audit.errors.added?(:failed_at, :blank)
   end
+
+  test "#failed_with_message!" do
+    expected_error_message = "error_message"
+    audit = create(:audit)
+
+    assert_changes -> { audit.reload.message }, to: expected_error_message do
+      audit.failed_with_message!(expected_error_message)
+
+      assert audit.failed?
+    end
+  end
 end

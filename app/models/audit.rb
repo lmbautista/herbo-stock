@@ -42,4 +42,10 @@ class Audit < ApplicationRecord
     self.failed_at = Time.current
     super
   end
+
+  def failed_with_message!(message)
+    self.message = message
+
+    failed!
+  end
 end

@@ -8,6 +8,7 @@ FactoryBot.define do
     started_at { Time.current }
     succeeded_at { nil }
     failed_at { nil }
+    message { nil }
   end
 
   trait :succeeded do
