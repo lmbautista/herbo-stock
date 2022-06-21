@@ -144,6 +144,7 @@ GEM
     mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
     minitest (5.15.0)
+    mocha (1.14.0)
     msgpack (1.5.2)
     multi_xml (0.6.0)
     net-imap (0.2.3)
@@ -315,6 +316,7 @@ DEPENDENCIES
   factory_bot_rails
   importmap-rails
   jbuilder
+  mocha
   puma (~> 5.0)
   rails (~> 7.0.3)
   rest-client

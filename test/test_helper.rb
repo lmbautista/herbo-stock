@@ -5,7 +5,11 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "factory_bot_rails"
+
+# Mocks
+require "minitest/mock"
 require "webmock/minitest"
+require "mocha/minitest"
 
 class ActiveSupport::TestCase
   # Setup FactoryBot
