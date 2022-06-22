@@ -327,5 +327,11 @@ module V1
       assert product.errors.added?(:cantidad_medida, :greater_than_or_equal_to,
                                    only_float: true, value: value, count: 0.0)
     end
+
+    test "#shopify_adapter" do
+      product = build(:v1_product)
+
+      assert_kind_of V1::Products::Shopify::Adapter, product.shopify_adapter
+    end
   end
 end

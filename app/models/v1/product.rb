@@ -38,5 +38,9 @@ module V1
     validates :unidad_medida, presence: true
     validates :cantidad_medida, presence: true,
                                 numericality: { only_float: true, greater_than_or_equal_to: 0.0 }
+
+    def shopify_adapter
+      @shopify_adapter ||= V1::Products::Shopify::Adapter.new(self)
+    end
   end
 end
