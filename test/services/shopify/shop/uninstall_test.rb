@@ -2,8 +2,8 @@
 
 require "test_helper"
 
-module Shops
-  module Shopify
+module Shopify
+  module Shop
     class UninstallTest < ActiveSupport::TestCase
       test "success" do
         shop = create(:shop)

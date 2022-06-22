@@ -3,11 +3,11 @@
 require "rest_client"
 require "json"
 
-module Shops
-  module Shopify
+module Shopify
+  module Shop
     class Uninstall
       def initialize(shop_id)
-        @shop = Shop.find(shop_id)
+        @shop = ::Shop.find(shop_id)
       end
 
       def call
