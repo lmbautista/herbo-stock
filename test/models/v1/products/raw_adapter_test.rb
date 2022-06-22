@@ -14,12 +14,22 @@ module V1
         assert_equal expected_keys, payload.keys
       end
 
-      test "#build_v1_product" do
+      test "#find_or_build_v1_product build new product" do
         raw_adapter = RawAdapter.new(data)
-        product = raw_adapter.build_v1_product
+        product = raw_adapter.find_or_build_v1_product
 
         assert product.valid?
-        assert product.save
+        assert_not product.persisted?
+      end
+
+      test "#find_or_build_v1_product find and update product" do
+        original_product = create(:v1_product, id: 1003)
+        raw_adapter = RawAdapter.new(data)
+        product = raw_adapter.find_or_build_v1_product
+
+        assert product.valid?
+        assert product.persisted?
+        assert_equal product.id, original_product.id
       end
 
       private

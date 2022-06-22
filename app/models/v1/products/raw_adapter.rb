@@ -40,8 +40,15 @@ module V1
         }
       end
 
-      def build_v1_product
-        V1::Product.new(payload)
+      def find_or_build_v1_product
+        product = V1::Product.find_by(payload.fetch(:id))
+
+        if product.present?
+          product.assign_attributes(**payload)
+          product
+        else
+          V1::Product.new(payload)
+        end
       end
 
       private
