@@ -86,4 +86,6 @@ gem "rubocop-rails"
 # HTTP client
 gem "rest-client"
 
+gem "virtus"
+
 gem "shopify_app", "~>19.0.1"
