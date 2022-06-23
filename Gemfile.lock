@@ -111,6 +111,10 @@ GEM
     digest (3.1.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.7.6)
+    dotenv-rails (2.7.6)
+      dotenv (= 2.7.6)
+      railties (>= 3.2)
     erubi (1.10.0)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
@@ -327,6 +331,7 @@ DEPENDENCIES
   byebug
   capybara
   debug
+  dotenv-rails
   factory_bot_rails
   importmap-rails
   jbuilder
