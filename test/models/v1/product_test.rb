@@ -340,5 +340,24 @@ module V1
 
       assert_kind_of V1::Products::Shopify::Adapter, product.shopify_adapter
     end
+
+    test "#find_or_initialize_external_product return persisted record" do
+      product = create(:v1_product)
+      create(:v1_product_external_resource, product: product)
+
+      external_product = product.find_or_initialize_external_product
+
+      assert external_product.persisted?
+      assert external_product.external_id.present?
+    end
+
+    test "#find_or_initialize_external_product return new record" do
+      product = create(:v1_product)
+
+      external_product = product.find_or_initialize_external_product
+
+      assert_not external_product.persisted?
+      assert external_product.external_id.blank?
+    end
   end
 end

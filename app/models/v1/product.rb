@@ -3,7 +3,7 @@
 module V1
   class Product < ApplicationRecord
     belongs_to :shop
-    has_many :product_external_resources
+    has_many :product_external_resources, foreign_key: "v1_product_id"
 
     validates :sku, presence: true
     validates :definicion, presence: true
@@ -44,6 +44,11 @@ module V1
 
     def shopify_adapter
       @shopify_adapter ||= V1::Products::Shopify::Adapter.new(self)
+    end
+
+    def find_or_initialize_external_product
+      product_external_resources
+        .find_or_initialize_by(kind: ProductExternalResource::KIND_SHOPIFY_PRODUCT)
     end
   end
 end
