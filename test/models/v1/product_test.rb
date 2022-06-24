@@ -4,6 +4,13 @@ require "test_helper"
 
 module V1
   class ProductTest < ActiveSupport::TestCase
+    test "shop_id is required" do
+      product = build(:v1_product, shop_id: nil)
+
+      assert product.invalid?
+      assert product.errors.added?(:shop, :blank)
+    end
+
     test "sku is required" do
       product = build(:v1_product, sku: nil)
 

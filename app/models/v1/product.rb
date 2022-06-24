@@ -2,6 +2,8 @@
 
 module V1
   class Product < ApplicationRecord
+    belongs_to :shop
+
     validates :sku, presence: true
     validates :definicion, presence: true
     validates :ampliacion, presence: true
