@@ -316,7 +316,7 @@ module V1
           shopify_product = adapter.to_product
 
           assert_kind_of ::Shopify::Product, shopify_product
-          assert_equal shopify_product.id, product.external_id
+          assert_equal shopify_product.id, product.find_or_initialize_external_product.external_id
           assert_equal shopify_product.shop_id, product.shop_id
           assert_equal shopify_product.title, adapter.title
           assert_equal shopify_product.body_html, adapter.body_html

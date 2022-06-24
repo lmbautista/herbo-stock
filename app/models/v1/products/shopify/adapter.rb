@@ -214,7 +214,7 @@ module V1
 
         def to_product
           attributes = {
-            id: product.external_id,
+            id: product.find_or_initialize_external_product.external_id,
             shop_id: product.shop_id,
             title: title,
             body_html: body_html,
