@@ -29,6 +29,8 @@ module Catalog
         with_audit(operation_id: operation_id, params: row_data) do
           generate_product_with_response(adapter)
             .and_then { |product| save_product_with_response(product) }
+            .and_then { |product| upsert_shopify_product_with_response(product) }
+            .on_failure { |error| responses << Response.failure(error) }
         end
       end
     end
@@ -37,11 +39,17 @@ module Catalog
       Response.success(adapter.find_or_build_v1_product)
     end
 
-    def save_product_with_response(product)
-      response = product.save ? Response.success(product) : response_failure(product)
-      responses << response
+    def upsert_shopify_product_with_response(product)
+      product.shopify_adapter.to_product.save_with_response
+        .and_then do |shopify_product|
+          product.update(external_id: shopify_product.id)
 
-      response
+          Response.success(product)
+        end
+    end
+
+    def save_product_with_response(product)
+      product.save ? Response.success(product) : response_failure(product)
     end
 
     def operation_id
