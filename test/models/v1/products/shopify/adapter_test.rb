@@ -302,12 +302,13 @@ module V1
           assert_equal expected_status, adapter.status
         end
 
-        test "#payload" do
-          expected_payload = "8026067353872220bd740c4105398332"
+        test "#to_csv" do
+          expected_payload = "ded43c4181d45475e931349aec39f584"
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
-          assert_equal expected_payload, Digest::MD5.hexdigest(adapter.payload.to_json)
+          assert_equal expected_payload, Digest::MD5.hexdigest(adapter.to_csv.to_s)
+        end
         end
 
         private

@@ -158,7 +158,7 @@ module V1
           "active"
         end
 
-        def payload # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+        def to_csv # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
           {
             "Handle" => handle,
             "Title" => title,
