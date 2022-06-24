@@ -309,6 +309,22 @@ module V1
 
           assert_equal expected_payload, Digest::MD5.hexdigest(adapter.to_csv.to_s)
         end
+
+        test "#to_product" do
+          product = build(:v1_product, **product_attrs)
+          adapter = Adapter.new(product)
+          shopify_product = adapter.to_product
+
+          assert_kind_of ::Shopify::Product, shopify_product
+          assert_equal shopify_product.id, product.external_id
+          assert_equal shopify_product.shop_id, product.shop_id
+          assert_equal shopify_product.title, adapter.title
+          assert_equal shopify_product.body_html, adapter.body_html
+          assert_equal shopify_product.vendor, adapter.vendor
+          assert_equal shopify_product.product_type, adapter.custom_product_type
+          assert_equal shopify_product.handle, adapter.handle
+          assert_equal shopify_product.status, adapter.status
+          assert_equal shopify_product.tags, adapter.tags
         end
 
         private

@@ -212,6 +212,22 @@ module V1
           }
         end
 
+        def to_product
+          attributes = {
+            id: product.external_id,
+            shop_id: product.shop_id,
+            title: title,
+            body_html: body_html,
+            vendor: vendor,
+            product_type: custom_product_type,
+            handle: handle,
+            status: status,
+            tags: tags
+          }
+
+          ::Shopify::Product.new(attributes)
+        end
+
         private
 
         attr_reader :product
