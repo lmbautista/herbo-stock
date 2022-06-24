@@ -23,6 +23,14 @@ module Shopify
 
         with_response_handler(201) { RestClient.post(url, params, headers) }
       end
+
+      def update(shop_id:, attributes:)
+        product_id = attributes.delete(:id)
+        path = "products/#{product_id}.json"
+        url, headers, params = prepare_request(shop_id, path, attributes)
+
+        with_response_handler(200) { RestClient.put(url, params, headers) }
+      end
     end
   end
 end

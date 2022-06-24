@@ -235,6 +235,9 @@ Style/StringChars:
 Style/SwapValues:
   Enabled: true
 
+Rails/ActiveRecordAliases:
+  Enabled: false
+
 Rails/ActiveRecordCallbacksOrder:
   Enabled: true
 
