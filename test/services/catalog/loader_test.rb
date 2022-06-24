@@ -4,12 +4,15 @@ require "test_helper"
 
 module Catalog
   class LoaderTest < ActiveSupport::TestCase
+    include ActiveJob::TestHelper
+
     test "has audit" do
       assert_includes Loader.included_modules, WithAudit
     end
 
     test "success" do
-      loader = Loader.new(file_fixture("raw_catalog.csv"))
+      shop = create(:shop)
+      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)
 
       assert_difference "Audit.succeeded.count", +1 do
         assert_difference "V1::Product.count", +1 do
@@ -21,7 +24,8 @@ module Catalog
     end
 
     test "fails" do
-      loader = Loader.new(file_fixture("raw_catalog.csv"))
+      shop = create(:shop)
+      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)
       error_messages = %w(error1 error2)
       expected_error = error_messages.to_sentence
 

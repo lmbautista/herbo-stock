@@ -4,8 +4,9 @@ module Catalog
   class Loader
     include WithAudit
 
-    def initialize(input_path)
+    def initialize(input_path, shop_id)
       @input_path = input_path
+      @shop_id = shop_id
       @responses = []
     end
 
@@ -19,22 +20,28 @@ module Catalog
 
     private
 
-    attr_reader :responses, :input_path
+    attr_reader :responses, :input_path, :shop_id
 
     def load_catalog
       CSV.read(input_path, headers: true, col_sep: ";").each do |row_data|
-        adapter = V1::Products::RawAdapter.new(row_data.to_h)
+        adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
 
         with_audit(operation_id: operation_id, params: row_data) do
-          adapter.find_or_build_v1_product
-            .then do |product|
-              response = product.save ? Response.success(product) : response_failure(product)
-              responses << response
-
-              response
-            end
+          generate_product_with_response(adapter)
+            .and_then { |product| save_product_with_response(product) }
         end
       end
+    end
+
+    def generate_product_with_response(adapter)
+      Response.success(adapter.find_or_build_v1_product)
+    end
+
+    def save_product_with_response(product)
+      response = product.save ? Response.success(product) : response_failure(product)
+      responses << response
+
+      response
     end
 
     def operation_id
