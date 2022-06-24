@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_22_151902) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_24_110733) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -63,6 +63,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_22_151902) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "external_id"
+    t.integer "shop_id", null: false
+    t.index ["shop_id"], name: "index_v1_products_on_shop_id"
   end
 
+  add_foreign_key "v1_products", "shops"
 end
