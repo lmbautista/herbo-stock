@@ -23,7 +23,7 @@ module Catalog
           response = loader.call
 
           assert response.success?
-          assert V1::Product.exists?(external_id: external_id)
+          assert V1::ProductExternalResource.exists?(external_id: external_id)
         end
       end
     end

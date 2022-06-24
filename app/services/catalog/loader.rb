@@ -42,9 +42,10 @@ module Catalog
     def upsert_shopify_product_with_response(product)
       product.shopify_adapter.to_product.save_with_response
         .and_then do |shopify_product|
-          product.update(external_id: shopify_product.id)
+          external_product = product.find_or_initialize_external_product
+          external_product.external_id = shopify_product.id
 
-          Response.success(product)
+          external_product.save ? Response.success(product) : response_failure(external_product)
         end
     end
 
