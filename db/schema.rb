@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_24_110733) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_24_151928) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -30,6 +30,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_24_110733) do
     t.datetime "updated_at", null: false
     t.string "access_scopes"
     t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true
+  end
+
+  create_table "v1_product_external_resources", force: :cascade do |t|
+    t.integer "v1_product_id", null: false
+    t.integer "external_id"
+    t.string "kind"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["v1_product_id"], name: "index_v1_product_external_resources_on_v1_product_id"
   end
 
   create_table "v1_products", force: :cascade do |t|
@@ -67,5 +76,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_24_110733) do
     t.index ["shop_id"], name: "index_v1_products_on_shop_id"
   end
 
+  add_foreign_key "v1_product_external_resources", "v1_products"
   add_foreign_key "v1_products", "shops"
 end
