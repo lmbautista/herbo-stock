@@ -6,8 +6,9 @@ module V1
   module Products
     class RawAdapterTest < ActiveSupport::TestCase
       test "#payload" do
-        expected_payload = "d4da4d158ad780a18c21d7de052bcfaa"
-        raw_adapter = RawAdapter.new(data)
+        shop = create(:shop)
+        expected_payload = "3e7a01d61afe4c7c094463e463e510e7"
+        raw_adapter = RawAdapter.new(data, shop.id)
         payload = raw_adapter.payload
 
         assert_equal expected_payload, Digest::MD5.hexdigest(payload.to_json)
@@ -15,7 +16,8 @@ module V1
       end
 
       test "#find_or_build_v1_product build new product" do
-        raw_adapter = RawAdapter.new(data)
+        shop = create(:shop)
+        raw_adapter = RawAdapter.new(data, shop.id)
         product = raw_adapter.find_or_build_v1_product
 
         assert product.valid?
@@ -23,8 +25,9 @@ module V1
       end
 
       test "#find_or_build_v1_product find and update product" do
-        original_product = create(:v1_product, id: 1003)
-        raw_adapter = RawAdapter.new(data)
+        shop = create(:shop)
+        original_product = create(:v1_product, id: 1003, shop_id: shop.id)
+        raw_adapter = RawAdapter.new(data, shop.id)
         product = raw_adapter.find_or_build_v1_product
 
         assert product.valid?
@@ -41,6 +44,7 @@ module V1
       def expected_keys
         %i(
           id
+          shop_id
           sku
           definicion
           ampliacion

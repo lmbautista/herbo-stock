@@ -3,13 +3,15 @@
 module V1
   module Products
     class RawAdapter
-      def initialize(data)
+      def initialize(data, shop_id)
         @data = data
+        @shop = Shop.find(shop_id)
       end
 
       def payload # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         {
           id: data.fetch("id"),
+          shop_id: shop.id,
           sku: data.fetch("SKU"),
           definicion: data.fetch("DEFINICION"),
           ampliacion: data.fetch("AMPLIACION"),
@@ -41,7 +43,7 @@ module V1
       end
 
       def find_or_build_v1_product
-        product = V1::Product.find_by(payload.fetch(:id))
+        product = V1::Product.find_by(id: payload.fetch(:id), shop_id: shop.id)
 
         if product.present?
           product.assign_attributes(**payload)
@@ -53,7 +55,7 @@ module V1
 
       private
 
-      attr_reader :data
+      attr_reader :data, :shop
     end
   end
 end
