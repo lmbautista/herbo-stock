@@ -3,6 +3,7 @@
 module V1
   class Product < ApplicationRecord
     belongs_to :shop
+    has_many :product_external_resources
 
     validates :sku, presence: true
     validates :definicion, presence: true
