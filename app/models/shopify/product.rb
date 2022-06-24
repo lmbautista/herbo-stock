@@ -12,25 +12,31 @@ module Shopify
     attribute :status, String
     attribute :tags, String
 
-    class << self
-      def resource_key
-        "product"
-      end
+    def save_with_response
+      id.blank? ? create : update
+    end
 
-      def create(shop_id:, attributes:)
-        path = "products.json"
-        url, headers, params = prepare_request(shop_id, path, attributes)
+    def resource_key
+      "product"
+    end
 
-        with_response_handler(201) { RestClient.post(url, params, headers) }
-      end
+    private
 
-      def update(shop_id:, attributes:)
-        product_id = attributes.delete(:id)
-        path = "products/#{product_id}.json"
-        url, headers, params = prepare_request(shop_id, path, attributes)
+    def create
+      path = "products.json"
+      request_attributes = attributes.except(:id, :shop_id)
+      url, headers, params = prepare_request(shop_id, path, request_attributes)
 
-        with_response_handler(200) { RestClient.put(url, params, headers) }
-      end
+      with_response_handler(201) { RestClient.post(url, params, headers) }
+    end
+
+    def update
+      product_id = attributes.delete(:id)
+      path = "products/#{product_id}.json"
+      request_attributes = attributes.except(:shop_id)
+      url, headers, params = prepare_request(shop_id, path, request_attributes)
+
+      with_response_handler(200) { RestClient.put(url, params, headers) }
     end
   end
 end

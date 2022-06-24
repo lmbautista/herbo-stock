@@ -5,14 +5,15 @@ require "test_helper"
 module Shopify
   class ProductTest < ActiveSupport::TestCase
     test "#resource_key" do
-      assert_equal "product", Product.resource_key
+      assert_equal "product", Product.new.resource_key
     end
 
     test "create success" do
       shop = create(:shop)
       stub_create_request(shop)
 
-      response = Product.create(shop_id: shop.id, attributes: create_attributes)
+      product = Product.new(shop_id: shop.id, **create_attributes)
+      response = product.save_with_response
 
       assert response.success?
       assert_kind_of Product, response.value
@@ -20,10 +21,10 @@ module Shopify
 
     test "update success" do
       shop = create(:shop)
-      attributes = update_attributes.merge(id: product_id)
       stub_update_request(shop)
 
-      response = Product.update(shop_id: shop.id, attributes: attributes)
+      product = Product.new(shop_id: shop.id, **update_attributes)
+      response = product.save_with_response
 
       assert response.success?
       assert_kind_of Product, response.value
@@ -37,7 +38,7 @@ module Shopify
 
     def stub_create_request(shop)
       url = "https://#{shop.shopify_domain}/admin/api/#{api_version}/products.json"
-      params = { Product.resource_key => create_attributes }
+      params = { Product.new.resource_key => create_attributes }
 
       stub_request(:post, url)
         .with(body: params)
@@ -54,13 +55,13 @@ module Shopify
 
     def stub_update_request(shop)
       url = "https://#{shop.shopify_domain}/admin/api/#{api_version}/products/#{product_id}.json"
-      params = { Product.resource_key => update_attributes }
+      params = { Product.new.resource_key => update_attributes }
 
       stub_request(:put, url)
         .with(body: params)
         .to_return(
           status: 200,
-          body: { product: update_attributes.merge(id: product_id) }.to_json,
+          body: { product: update_attributes }.to_json,
           headers: {}
         )
     end
@@ -75,7 +76,13 @@ module Shopify
     end
 
     def update_attributes
-      create_attributes.merge(title: "Burton Custom Freestyle 151 EDITED")
+      {
+        id: product_id,
+        title: "Burton Custom Freestyle 151 EDITED",
+        body_html: "<h1>Body</h1>",
+        vendor: "Burton",
+        product_type: "Snowboard table"
+      }
     end
   end
 end
