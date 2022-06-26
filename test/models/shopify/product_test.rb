@@ -71,7 +71,8 @@ module Shopify
         title: "Burton Custom Freestyle 151",
         body_html: "<h1>Body</h1>",
         vendor: "Burton",
-        product_type: "Snowboard table"
+        product_type: "Snowboard table",
+        variants: nil
       }
     end
 
@@ -81,7 +82,8 @@ module Shopify
         title: "Burton Custom Freestyle 151 EDITED",
         body_html: "<h1>Body</h1>",
         vendor: "Burton",
-        product_type: "Snowboard table"
+        product_type: "Snowboard table",
+        variants: nil
       }
     end
   end

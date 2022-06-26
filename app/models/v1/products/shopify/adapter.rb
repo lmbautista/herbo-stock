@@ -91,6 +91,10 @@ module V1
           "manual"
         end
 
+        def variant_ean
+          product.ean
+        end
+
         def variant_price
           product.pvp
         end
@@ -222,10 +226,29 @@ module V1
             product_type: custom_product_type,
             handle: handle,
             status: status,
-            tags: tags
+            tags: tags,
+            variants: product_variants
           }
 
           ::Shopify::Product.new(attributes)
+        end
+
+        def product_variants
+          attributes = {
+            product_id: product.find_or_initialize_external_product.external_id,
+            price: variant_price,
+            sku: variant_sku,
+            barcode: variant_ean,
+            weight: variant_grams,
+            weight_unit: variant_weight_unit,
+            taxable: ActiveModel::Type::Boolean.new.cast(variant_taxable),
+            fulfillment_service: variant_fulfillment_service,
+            inventory_policy: variant_inventory_policy,
+            inventory_quantity: variant_inventory_qty,
+            requires_shipping: ActiveModel::Type::Boolean.new.cast(variant_requires_shipping)
+          }
+
+          Array.wrap(::Shopify::ProductVariant.new(attributes))
         end
 
         private

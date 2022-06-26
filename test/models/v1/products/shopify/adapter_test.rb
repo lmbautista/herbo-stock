@@ -131,6 +131,15 @@ module V1
           assert_equal expected_variant_sku, adapter.variant_sku
         end
 
+        test "#variant_ean" do
+          expected_variant_ean = "8423266500305"
+          product = build(:v1_product, **product_attrs)
+          adapter = Adapter.new(product)
+
+          assert adapter.variant_ean
+          assert_equal expected_variant_ean, adapter.variant_ean
+        end
+
         test "#variant_grams" do
           expected_variant_grams = 100.0
           product = build(:v1_product, **product_attrs)
@@ -325,6 +334,37 @@ module V1
           assert_equal shopify_product.handle, adapter.handle
           assert_equal shopify_product.status, adapter.status
           assert_equal shopify_product.tags, adapter.tags
+          assert_equal shopify_product.variants.as_json, adapter.product_variants.as_json
+        end
+
+        test "#product_variants" do
+          product = build(:v1_product, **product_attrs)
+          adapter = Adapter.new(product)
+          shopify_product_variants = adapter.product_variants
+          shopify_product_variant = shopify_product_variants.first
+
+          assert_kind_of Array, shopify_product_variants
+          assert_kind_of ::Shopify::ProductVariant, shopify_product_variant
+          assert_equal shopify_product_variant.price,
+                       adapter.variant_price
+          assert_equal shopify_product_variant.sku,
+                       adapter.variant_sku
+          assert_equal shopify_product_variant.barcode,
+                       adapter.variant_ean
+          assert_equal shopify_product_variant.weight,
+                       adapter.variant_grams
+          assert_equal shopify_product_variant.weight_unit,
+                       adapter.variant_weight_unit
+          assert_equal shopify_product_variant.taxable,
+                       ActiveModel::Type::Boolean.new.cast(adapter.variant_taxable)
+          assert_equal shopify_product_variant.fulfillment_service,
+                       adapter.variant_fulfillment_service
+          assert_equal shopify_product_variant.inventory_policy,
+                       adapter.variant_inventory_policy
+          assert_equal shopify_product_variant.inventory_quantity,
+                       adapter.variant_inventory_qty
+          assert_equal shopify_product_variant.requires_shipping,
+                       ActiveModel::Type::Boolean.new.cast(adapter.variant_requires_shipping)
         end
 
         private

@@ -11,6 +11,7 @@ module Shopify
     attribute :handle, String
     attribute :status, String
     attribute :tags, String
+    attribute :variants, [Shopify::ProductVariant]
 
     def save_with_response
       id.blank? ? create : update
@@ -21,6 +22,13 @@ module Shopify
     end
 
     private
+
+    def load
+      path = "products/#{id}.json"
+      url, headers, = prepare_request(shop_id, path, {})
+
+      with_response_handler(200) { RestClient.get(url, headers) }
+    end
 
     def create
       path = "products.json"
