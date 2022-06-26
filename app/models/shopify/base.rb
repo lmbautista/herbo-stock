@@ -21,7 +21,7 @@ module Shopify
         "Accept" => "application/json"
       }
 
-      params = { resource_key => attributes.compact } if attributes.present?
+      params = { resource_key => attributes.as_json } if attributes.present?
 
       [url, headers, params]
     end

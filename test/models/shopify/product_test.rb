@@ -38,13 +38,13 @@ module Shopify
 
     def stub_create_request(shop)
       url = "https://#{shop.shopify_domain}/admin/api/#{api_version}/products.json"
-      params = { Product.new.resource_key => create_attributes }
+      params = { Product.new.resource_key => create_params }
 
       stub_request(:post, url)
         .with(body: params)
         .to_return(
           status: 201,
-          body: { product: create_attributes.merge(id: product_id) }.to_json,
+          body: { product: create_params }.to_json,
           headers: {}
         )
     end
@@ -55,13 +55,13 @@ module Shopify
 
     def stub_update_request(shop)
       url = "https://#{shop.shopify_domain}/admin/api/#{api_version}/products/#{product_id}.json"
-      params = { Product.new.resource_key => update_attributes }
+      params = { Product.new.resource_key => update_params }
 
       stub_request(:put, url)
         .with(body: params)
         .to_return(
           status: 200,
-          body: { product: update_attributes }.to_json,
+          body: { product: update_params }.to_json,
           headers: {}
         )
     end
@@ -72,7 +72,8 @@ module Shopify
         body_html: "<h1>Body</h1>",
         vendor: "Burton",
         product_type: "Snowboard table",
-        variants: nil
+        variants: [{ price: 15.30 }],
+        images: [{ src: "dummy-img.png" }]
       }
     end
 
@@ -83,7 +84,75 @@ module Shopify
         body_html: "<h1>Body</h1>",
         vendor: "Burton",
         product_type: "Snowboard table",
-        variants: nil
+        variants: [{ price: 15.30 }],
+        images: [{ src: "dummy-img.png" }]
+      }
+    end
+
+    def create_params
+      {
+        "title" => "Burton Custom Freestyle 151",
+        "body_html" => "<h1>Body</h1>",
+        "vendor" => "Burton",
+        "product_type" => "Snowboard table",
+        "handle" => nil,
+        "status" => nil,
+        "tags" => nil,
+        "images" => [
+          {
+            "position" => nil,
+            "alt" => nil,
+            "src" => "dummy-img.png"
+          }
+        ],
+        "variants" => [
+          {
+            "price" => "15.3",
+            "sku" => nil,
+            "barcode" => nil,
+            "weight" => nil,
+            "weight_unit" => nil,
+            "taxable" => nil,
+            "fulfillment_service" => nil,
+            "inventory_policy" => nil,
+            "inventory_quantity" => nil,
+            "requires_shipping" => nil
+          }
+        ]
+      }
+    end
+
+    def update_params
+      {
+        "id" => "7730938544374",
+        "title" => "Burton Custom Freestyle 151 EDITED",
+        "body_html" => "<h1>Body</h1>",
+        "vendor" => "Burton",
+        "product_type" => "Snowboard table",
+        "handle" => nil,
+        "status" => nil,
+        "tags" => nil,
+        "images" => [
+          {
+            "position" => nil,
+            "alt" => nil,
+            "src" => "dummy-img.png"
+          }
+        ],
+        "variants" => [
+          {
+            "price" => "15.3",
+            "sku" => nil,
+            "barcode" => nil,
+            "weight" => nil,
+            "weight_unit" => nil,
+            "taxable" => nil,
+            "fulfillment_service" => nil,
+            "inventory_policy" => nil,
+            "inventory_quantity" => nil,
+            "requires_shipping" => nil
+          }
+        ]
       }
     end
   end
