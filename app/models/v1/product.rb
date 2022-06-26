@@ -3,7 +3,9 @@
 module V1
   class Product < ApplicationRecord
     belongs_to :shop
-    has_many :product_external_resources, foreign_key: "v1_product_id"
+    has_many :product_external_resources,
+             foreign_key: "v1_product_id",
+             dependent: :destroy
 
     validates :sku, presence: true
     validates :definicion, presence: true
