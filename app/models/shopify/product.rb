@@ -11,6 +11,7 @@ module Shopify
     attribute :handle, String
     attribute :status, String
     attribute :tags, String
+    attribute :images, [Shopify::ProductImage]
     attribute :variants, [Shopify::ProductVariant]
 
     def save_with_response

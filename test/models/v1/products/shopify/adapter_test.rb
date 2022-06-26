@@ -242,11 +242,11 @@ module V1
           assert_equal expected_image_position, adapter.image_position
         end
 
-        test "#image_at_text" do
+        test "#image_alt_text" do
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
-          assert_nil adapter.image_at_text
+          assert_nil adapter.image_alt_text
         end
 
         test "#gift_card" do

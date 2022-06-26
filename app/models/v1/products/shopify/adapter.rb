@@ -123,7 +123,7 @@ module V1
           1
         end
 
-        def image_at_text
+        def image_alt_text
           nil
         end
 
@@ -191,7 +191,7 @@ module V1
             "Variant Barcode" => variant_barcode,
             "Image Src" => image_src,
             "Image Position" => image_position,
-            "Image Alt Text" => image_at_text,
+            "Image Alt Text" => image_alt_text,
             "Gift Card" => gift_card,
             "SEO Title" => seo_title,
             "SEO Description" => seo_description,
@@ -227,7 +227,8 @@ module V1
             handle: handle,
             status: status,
             tags: tags,
-            variants: product_variants
+            variants: product_variants,
+            images: product_images
           }
 
           ::Shopify::Product.new(attributes)
@@ -235,7 +236,6 @@ module V1
 
         def product_variants
           attributes = {
-            product_id: product.find_or_initialize_external_product.external_id,
             price: variant_price,
             sku: variant_sku,
             barcode: variant_ean,
@@ -249,6 +249,16 @@ module V1
           }
 
           Array.wrap(::Shopify::ProductVariant.new(attributes))
+        end
+
+        def product_images
+          attributes = {
+            position: image_position,
+            alt: image_alt_text,
+            src: image_src
+          }
+
+          Array.wrap(::Shopify::ProductImage.new(attributes))
         end
 
         private
