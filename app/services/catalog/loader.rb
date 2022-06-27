@@ -62,7 +62,10 @@ module Catalog
     end
 
     def response_failure(record)
-      Response.failure(record.errors.full_messages.to_sentence)
+      id_error_message = "#{record.class}##{record.id}:"
+      error_message = [id_error_message, record.errors.full_messages.to_sentence].join(" ")
+
+      Response.failure(error_message)
     end
   end
 end

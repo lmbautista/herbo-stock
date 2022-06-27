@@ -50,7 +50,7 @@ module Catalog
       shop = create(:shop)
       loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)
       error_messages = %w(error1 error2)
-      expected_error = error_messages.to_sentence
+      expected_error = "V1::Product#1003: #{error_messages.to_sentence}"
 
       mock_products_raw_adapter(error_messages)
 
