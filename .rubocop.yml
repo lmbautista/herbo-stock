@@ -127,7 +127,7 @@ Style/NumericLiterals:
   MinDigits: 5
   Strict: false
 
-Gemspec/DateAssignment:
+Gemspec/DeprecatedAttributeAssignment:
   Enabled: true
 
 Layout/LineEndStringConcatenationIndentation:
