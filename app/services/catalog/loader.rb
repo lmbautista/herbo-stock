@@ -23,7 +23,7 @@ module Catalog
     attr_reader :responses, :input_path, :shop_id
 
     def load_catalog
-      CSV.read(input_path, headers: true, col_sep: ";").each do |row_data|
+      CSV.read(input_path, **csv_options).each do |row_data|
         adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
 
         with_audit(operation_id: operation_id, params: row_data) do
@@ -33,6 +33,10 @@ module Catalog
             .on_failure { |error| responses << Response.failure(error) }
         end
       end
+    end
+
+    def csv_options
+      { headers: true, col_sep: ";", encoding: "bom|utf-8" }
     end
 
     def generate_product_with_response(adapter)

@@ -313,7 +313,7 @@ module V1
         end
 
         test "#to_csv" do
-          expected_payload = "ded43c4181d45475e931349aec39f584"
+          expected_payload = "a30906cdd4a829e0d705172663c766ac"
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 

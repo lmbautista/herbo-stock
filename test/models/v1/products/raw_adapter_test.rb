@@ -7,7 +7,7 @@ module V1
     class RawAdapterTest < ActiveSupport::TestCase
       test "#payload" do
         shop = create(:shop)
-        expected_payload = "49a0cc54bbdbf3d0c2b0fe7d7bdbb811"
+        expected_payload = "97c12336d8f1691a7b35517d2951f0f9"
         raw_adapter = RawAdapter.new(data, shop.id)
         payload = raw_adapter.payload
 
@@ -38,7 +38,11 @@ module V1
       private
 
       def data
-        @data ||= CSV.read(file_fixture("raw_catalog.csv"), headers: true, col_sep: ";").first
+        @data ||= CSV.read(file_fixture("raw_catalog.csv"), **csv_options).first
+      end
+
+      def csv_options
+        { headers: true, col_sep: ";", encoding: "bom|utf-8" }
       end
 
       def expected_keys
