@@ -150,10 +150,11 @@ module V1
         end
 
         test "#variant_inventory_tracker" do
+          expected_invetory_tracker = "shopify"
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
-          assert_nil adapter.variant_inventory_tracker
+          assert_equal expected_invetory_tracker, adapter.variant_inventory_tracker
         end
 
         test "#variant_inventory_qty" do
@@ -361,6 +362,8 @@ module V1
                        adapter.variant_fulfillment_service
           assert_equal shopify_product_variant.inventory_policy,
                        adapter.variant_inventory_policy
+          assert_equal shopify_product_variant.inventory_management,
+                       adapter.variant_inventory_tracker
           assert_equal shopify_product_variant.inventory_quantity,
                        adapter.variant_inventory_qty
           assert_equal shopify_product_variant.requires_shipping,

@@ -116,6 +116,7 @@ module Shopify
             "fulfillment_service" => nil,
             "inventory_policy" => nil,
             "inventory_quantity" => nil,
+            "inventory_management" => nil,
             "requires_shipping" => nil
           }
         ]
@@ -150,6 +151,7 @@ module Shopify
             "fulfillment_service" => nil,
             "inventory_policy" => nil,
             "inventory_quantity" => nil,
+            "inventory_management" => nil,
             "requires_shipping" => nil
           }
         ]

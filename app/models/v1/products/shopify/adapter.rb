@@ -76,7 +76,7 @@ module V1
         end
 
         def variant_inventory_tracker
-          nil
+          "shopify"
         end
 
         def variant_inventory_qty
@@ -245,6 +245,7 @@ module V1
             fulfillment_service: variant_fulfillment_service,
             inventory_policy: variant_inventory_policy,
             inventory_quantity: variant_inventory_qty,
+            inventory_management: variant_inventory_tracker,
             requires_shipping: ActiveModel::Type::Boolean.new.cast(variant_requires_shipping)
           }
 

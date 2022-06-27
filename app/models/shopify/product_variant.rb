@@ -13,6 +13,7 @@ module Shopify
     attribute :fulfillment_service, String
     attribute :inventory_policy, String
     attribute :inventory_quantity, Integer
+    attribute :inventory_management, String
     attribute :requires_shipping, Boolean
   end
 end
