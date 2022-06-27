@@ -72,7 +72,7 @@ module V1
         end
 
         def variant_grams
-          product.peso * 100.0
+          product.peso * 1000.0
         end
 
         def variant_inventory_tracker

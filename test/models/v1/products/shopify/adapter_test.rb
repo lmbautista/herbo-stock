@@ -141,7 +141,7 @@ module V1
         end
 
         test "#variant_grams" do
-          expected_variant_grams = 100.0
+          expected_variant_grams = 1000.0
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
