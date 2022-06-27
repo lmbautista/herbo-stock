@@ -29,14 +29,14 @@ module V1
           fecha_imagen: data.fetch("FECHA_IMAGEN"),
           cat: data.fetch("CAT"),
           marca: data.fetch("MARCA"),
-          frio: data.fetch("FRIO"),
-          congelado: data.fetch("CONGELADO"),
-          bio: data.fetch("BIO"),
-          apto_diabetico: data.fetch("APTO_DIABETICO"),
-          gluten: data.fetch("GLUTEN"),
-          huevo: data.fetch("HUEVO"),
-          lactosa: data.fetch("LACTOSA"),
-          apto_vegano: data.fetch("APTO_VEGANO"),
+          frio: with_boolean_fallback_for("FRIO"),
+          congelado: with_boolean_fallback_for("CONGELADO"),
+          bio: with_boolean_fallback_for("BIO"),
+          apto_diabetico: with_boolean_fallback_for("APTO_DIABETICO"),
+          gluten: with_boolean_fallback_for("GLUTEN"),
+          huevo: with_boolean_fallback_for("HUEVO"),
+          lactosa: with_boolean_fallback_for("LACTOSA"),
+          apto_vegano: with_boolean_fallback_for("APTO_VEGANO"),
           unidad_medida: data.fetch("UNIDAD_MEDIDA"),
           cantidad_medida: data.fetch("CANTIDAD_MEDIDA")
         }
@@ -56,6 +56,10 @@ module V1
       private
 
       attr_reader :data, :shop
+
+      def with_boolean_fallback_for(field_name)
+        data.fetch(field_name).presence || 0
+      end
     end
   end
 end
