@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_25_154434) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_28_152008) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -76,6 +76,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_25_154434) do
     t.index ["shop_id"], name: "index_v1_products_on_shop_id"
   end
 
+  create_table "v1_webhooks", force: :cascade do |t|
+    t.string "topic", null: false
+    t.integer "shop_id", null: false
+    t.json "body", null: false
+    t.string "status", null: false
+    t.string "message"
+    t.integer "retries", default: 0, null: false
+    t.datetime "succeeded_at"
+    t.datetime "failed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id"], name: "index_v1_webhooks_on_shop_id"
+  end
+
   add_foreign_key "v1_product_external_resources", "v1_products"
   add_foreign_key "v1_products", "shops"
+  add_foreign_key "v1_webhooks", "shops"
 end
