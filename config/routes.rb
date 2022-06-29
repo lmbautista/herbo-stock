@@ -2,7 +2,15 @@
 
 Rails.application.routes.draw do
   root to: "home#index"
+
   get "/products", to: "products#index"
+
+  namespace :shopify do
+    namespace :webhooks do
+      post :app_uninstalled, controller: "app_uninstalled", action: :create
+    end
+  end
+
   mount ShopifyApp::Engine, at: "/"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

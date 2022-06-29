@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
+WEBHOOK_NAMESPACE = "shopify/webhooks"
+
 ShopifyApp.configure do |config|
+  config.webhook_jobs_namespace = WEBHOOK_NAMESPACE
+  config.webhooks = [
+    { topic: "app/uninstalled", address: "#{WEBHOOK_NAMESPACE}/app_uninstalled" }
+  ]
   config.application_name = "HerboStock"
   config.old_secret = ""
   config.scope = "write_products,write_customers,write_draft_orders"
