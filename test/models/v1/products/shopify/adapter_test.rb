@@ -321,7 +321,8 @@ module V1
         end
 
         test "#to_product" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
+          create(:v1_product_external_resource, product: product)
           adapter = Adapter.new(product)
           shopify_product = adapter.to_product
 
