@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_28_152008) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_29_134544) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -87,6 +87,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_28_152008) do
     t.datetime "failed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "shop_domain", null: false
+    t.index ["shop_domain"], name: "index_v1_webhooks_on_shop_domain"
     t.index ["shop_id"], name: "index_v1_webhooks_on_shop_id"
   end
 
