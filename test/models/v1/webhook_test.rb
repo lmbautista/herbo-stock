@@ -90,5 +90,11 @@ module V1
       assert webhook.invalid?
       assert webhook.errors.added?(:shop_domain, :blank)
     end
+
+    test "#shop" do
+      webhook = create(:v1_webhook)
+
+      assert webhook.shop.persisted?
+    end
   end
 end

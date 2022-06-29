@@ -17,8 +17,6 @@ module V1
                  failed: %i(failed succeeded)
                }.freeze
 
-    belongs_to :shop
-
     validates :topic, presence: true, inclusion: { in: ALLOWED_TOPICS }
     validates :body, presence: true, json: true
     validates :status, presence: true
@@ -28,6 +26,10 @@ module V1
     validates :retries,
               presence: true,
               numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+    def shop
+      @shop ||= Shop.find_by(shopify_domain: shop_domain)
+    end
 
     def succeeded?
       attribute_in_database(:status) == STATUS_SUCCEEDED ||
