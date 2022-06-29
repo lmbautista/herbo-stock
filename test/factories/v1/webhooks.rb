@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :v1_webhook, class: "V1::Webhook" do
     topic { "app/uninstalled" }
     shop { build(:shop) }
+    shop_domain { build(:shop).shopify_domain }
     body { { id: 1 } }
     status { V1::Webhook::STATUS_SUCCEEDED }
     succeeded_at { Time.current }

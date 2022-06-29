@@ -83,5 +83,12 @@ module V1
       assert webhook.failed?
       assert_equal expected_error_message, webhook.reload.message
     end
+
+    test "shopify_domain is required" do
+      webhook = build(:v1_webhook, shop_domain: nil)
+
+      assert webhook.invalid?
+      assert webhook.errors.added?(:shop_domain, :blank)
+    end
   end
 end

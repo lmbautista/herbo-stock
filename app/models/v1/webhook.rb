@@ -24,6 +24,7 @@ module V1
     validates :status, presence: true
     validates :succeeded_at, presence: true, if: :succeeded?
     validates :failed_at, presence: true, if: :failed?
+    validates :shop_domain, presence: true
     validates :retries,
               presence: true,
               numericality: { only_integer: true, greater_than_or_equal_to: 0 }
