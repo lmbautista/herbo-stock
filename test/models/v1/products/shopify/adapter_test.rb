@@ -391,7 +391,7 @@ module V1
             hay_foto: true,
             imagen: "https://distribudiet.net/webstore/images/01003.jpg",
             fecha_imagen: "04/03/2020 0:00:00",
-            cat: "ALIMENTACIÓN, GRANEL, Cereales legumbres y frutos secos, "\
+            cat: "ALIMENTACIÓN, GRANEL, Cereales legumbres y frutos secos, " \
                  "Desayuno y entre horas, Varios",
             marca: "GRANOVITA",
             frio: false,
