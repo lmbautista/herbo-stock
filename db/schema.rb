@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_30_143234) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_30_150329) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -72,7 +72,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_30_143234) do
     t.float "cantidad_medida", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "external_id"
     t.integer "shop_id", null: false
     t.index ["shop_id"], name: "index_v1_products_on_shop_id"
   end
