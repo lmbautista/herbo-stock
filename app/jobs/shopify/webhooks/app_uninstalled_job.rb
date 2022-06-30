@@ -3,6 +3,7 @@
 module Shopify
   module Webhooks
     class AppUninstalledJob < ApplicationJob
+      include WithAudit
       extend ShopifyAPI::Webhooks::Handler
 
       class << self
@@ -17,9 +18,13 @@ module Shopify
         @body = body
         @shop = ::Shop.find_by(shopify_domain: shop_domain)
 
-        destroy_shop_with_response
-          .and_then { webhook_succeeded_with_response }
-          .on_failure { |error_messasge| webhook_failed_with_response(error_messasge) }
+        with_audit(operation_id: operation_id, params: body) do
+          ActiveRecord::Base.transaction do
+            destroy_shop_with_response
+              .and_then { webhook_succeeded_with_response }
+              .on_failure { |error_messasge| webhook_failed_with_response(error_messasge) }
+          end
+        end
       end
 
       private
@@ -46,6 +51,10 @@ module Shopify
       def webhook_failed_with_response(error_message)
         webhook.failed_with_message!(error_message)
         Response.failure(error_message)
+      end
+
+      def operation_id
+        self.class.to_s
       end
 
       def response_failure(record)

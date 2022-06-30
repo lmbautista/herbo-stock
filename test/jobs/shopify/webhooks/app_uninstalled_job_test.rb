@@ -5,6 +5,10 @@ require "test_helper"
 module Shopify
   module Webhooks
     class AppUninstalledJobTest < ActiveJob::TestCase
+      test "with audit" do
+        assert_includes AppUninstalledJob.included_modules, WithAudit
+      end
+
       test "#handle" do
         shop = create(:shop)
         job_params = {
@@ -60,7 +64,7 @@ module Shopify
         {
           "id" => 64_975_208_694,
           "name" => "herbomadrid-test",
-          "email" => "luismiguel.bautista@jobandtalent.com",
+          "email" => "lmiguelbautista@gmail.com",
           "domain" => "herbomadrid-test.myshopify.com",
           "province" => "Madrid"
         }
