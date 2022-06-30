@@ -16,8 +16,6 @@ module Shopify
         @topic = topic
         @shop_domain = shop_domain
         @body = body
-        @shop = ::Shop.find_by(shopify_domain: shop_domain)
-
         with_audit(operation_id: operation_id, params: body) do
           ActiveRecord::Base.transaction do
             destroy_shop_with_response
@@ -29,10 +27,13 @@ module Shopify
 
       private
 
-      attr_reader :shop,
-                  :topic,
+      attr_reader :topic,
                   :shop_domain,
                   :body
+
+      def shop
+        @shop ||= ::Shop.find_by!(shopify_domain: shop_domain)
+      end
 
       def destroy_shop_with_response
         shop.destroy ? Response.success(shop) : response_failure(shop)
