@@ -16,7 +16,8 @@ module Shopify
         @topic = topic
         @shop_domain = shop_domain
         @body = body
-        with_audit(operation_id: operation_id, params: body) do
+
+        with_audit(operation_id: operation_id, params: body, shop: shop) do
           ActiveRecord::Base.transaction do
             destroy_shop_with_response
               .and_then { webhook_succeeded_with_response }

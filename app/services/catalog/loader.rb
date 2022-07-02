@@ -26,7 +26,7 @@ module Catalog
       CSV.read(input_path, **csv_options).each do |row_data|
         adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
 
-        with_audit(operation_id: operation_id, params: row_data) do
+        with_audit(operation_id: operation_id, params: row_data, shop: shop) do
           generate_product_with_response(adapter)
             .and_then { |product| save_product_with_response(product) }
             .and_then { |product| upsert_shopify_product_with_response(product) }
@@ -37,6 +37,10 @@ module Catalog
 
     def csv_options
       { headers: true, col_sep: ";", encoding: "bom|utf-8" }
+    end
+
+    def shop
+      @shop ||= ::Shop.find(shop_id)
     end
 
     def generate_product_with_response(adapter)

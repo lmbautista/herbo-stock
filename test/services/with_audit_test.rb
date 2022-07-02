@@ -6,13 +6,14 @@ class WithAuditTest < ActiveSupport::TestCase
   class DummyService
     include WithAudit
 
-    def initialize(params:, response:)
+    def initialize(params:, response:, shop:)
       @params = params
       @response = response
+      @shop = shop
     end
 
     def call
-      with_audit(operation_id: self.class.to_s, params: @params) do
+      with_audit(operation_id: self.class.to_s, shop: @shop, params: @params) do
         @response
       end
     end
@@ -21,12 +22,13 @@ class WithAuditTest < ActiveSupport::TestCase
   class DummyServiceWithBug
     include WithAudit
 
-    def initialize(params:)
+    def initialize(params:, shop:)
       @params = params
+      @shop = shop
     end
 
     def call
-      with_audit(operation_id: self.class.to_s, params: @params) do
+      with_audit(operation_id: self.class.to_s, shop: @shop, params: @params) do
         whatever
       end
     end
@@ -34,7 +36,7 @@ class WithAuditTest < ActiveSupport::TestCase
 
   test "success" do
     expected_response = Response.success(:ok!)
-    dummy = DummyService.new(params: params, response: expected_response)
+    dummy = DummyService.new(params: params, response: expected_response, shop: shop)
 
     assert_difference "Audit.count", +1 do
       response = dummy.call
@@ -50,7 +52,7 @@ class WithAuditTest < ActiveSupport::TestCase
 
   test "failed" do
     expected_response = Response.failure(:ok!)
-    dummy = DummyService.new(params: params, response: expected_response)
+    dummy = DummyService.new(params: params, response: expected_response, shop: shop)
 
     assert_difference "Audit.count", +1 do
       response = dummy.call
@@ -67,7 +69,7 @@ class WithAuditTest < ActiveSupport::TestCase
   test "failed with unexpected exception" do
     error_message = /Unexpected exception: undefined local variable or method `whatever/
 
-    dummy = DummyServiceWithBug.new(params: params)
+    dummy = DummyServiceWithBug.new(params: params, shop: shop)
 
     assert_difference "Audit.count", +1 do
       response = dummy.call
@@ -85,5 +87,9 @@ class WithAuditTest < ActiveSupport::TestCase
 
   def params
     { a: 1, b: 2 }
+  end
+
+  def shop
+    @shop ||= create(:shop)
   end
 end

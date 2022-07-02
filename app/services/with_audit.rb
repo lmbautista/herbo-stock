@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module WithAudit
-  def with_audit(operation_id:, params: {})
+  def with_audit(operation_id:, shop:, params: {})
     audit_params = {
       operation_id: operation_id,
+      shop_domain: shop.shopify_domain,
       raw_params: params.to_json,
       status: Audit::STATUS_STARTED,
       started_at: Time.current

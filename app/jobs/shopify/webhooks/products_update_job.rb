@@ -20,7 +20,7 @@ module Shopify
         @shop_domain = shop_domain
         @body = body
 
-        with_audit(operation_id: operation_id, params: body) do
+        with_audit(operation_id: operation_id, params: body, shop: shop) do
           return Response.success(product) if product.nil? || inventory_quantity.nil?
 
           update_product_quantity_with_response
