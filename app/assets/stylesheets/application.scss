@@ -1,0 +1,17 @@
+@import "bootstrap";
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+$primary-font-color: #111;
+$secondary-font-color: #444;
+
+
+* { font-family: 'Roboto', sans-serif; color: $primary-font-color; }
+
+.title-font { font-family: 'Archivo Narrow', sans-serif; }
+
+.primary-font-color { color: $primary-font-color; }
+.secondary-font-color { color: $secondary-font-color; }
+.inline { display: inline-block; }
+
+.main-card { background: #ffff }

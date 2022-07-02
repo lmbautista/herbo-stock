@@ -89,4 +89,8 @@ gem "rest-client"
 
 gem "virtus"
 
+gem "bootstrap", "~> 5.1.3"
+gem "jquery-rails"
+gem "sass-rails"
+
 gem "shopify_app", "~>19.0.1"

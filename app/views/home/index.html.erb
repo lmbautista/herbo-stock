@@ -3,15 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@shopify/polaris@4.25.0/styles.min.css"
-      />
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <script>
       document.addEventListener("DOMContentLoaded", async function() {
-        
+
           await import("lib/shopify_app")
-        
+
 
         var SessionToken = window["app-bridge"].actions.SessionToken
         var app = window.app;
@@ -50,18 +47,160 @@
     </script>
   </head>
   <body>
-    <h2>Products</h2>
-    <div id="products"><br>Loading...</div>
-    <h2>Webhooks</h2>
+    <div class="container-fluid">
+      <div class="m-3 p-3 main-card">
+        <div class="d-flex flex-row bd-highlight mb-1 align-items-center">
+          <div class="p-2 bd-highlight"><%= image_tag "logo.png", size: 90 %></div>
+          <div class="p-2 bd-highlight">
+            <h1 class="title-font m-0 inline">HerboMadrid</h1>
+            <h3 class="title-font secondary-font-color m-0 inline"> # stock controller</h3>
+            <h6>Provider catalog sync manager</h6>
+          </div>
+        </div>
 
-    <% if @webhooks.present? %>
-    <ul>
-      <% @webhooks.each do |webhook| %>
-      <li><%= webhook.topic %> : <%= webhook.address %></li>
-      <% end %>
-    </ul>
-    <% else %>
-    <p>This app has not created any webhooks for this Shop. Add webhooks to your ShopifyApp initializer if you need webhooks</p>
-    <% end %>
+        <hr/>
+
+        <%# Products BEGIN %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-row bd-highlight pt-3 pb-3 align-items-center">
+              <div class="bd-highlight"><%= image_tag "product-icon.png", size: 60 %></div>
+              <div class="bd-highlight">
+                <h3 class="title-font m-0">Products</h3>
+              </div>
+            </div>
+            <div class="m-2">
+              <div id="products"><br>Loading...</div>
+            </div>
+          </div>
+        </div>
+        <%# Products END %>
+
+        <%# Webhooks configuration BEGIN %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-row bd-highlight pt-3 pb-3 align-items-center">
+              <div class="bd-highlight"><%= image_tag "config-icon.png", size: 60 %></div>
+              <div class="bd-highlight">
+                <h3 class="title-font m-0">Webhooks configuration</h3>
+                <h5 class="title-font secondary-font-color m-0">
+                  Here we list the current webhooks enabled in the sync manager
+                </h5>
+              </div>
+            </div>
+            <div class="m-2">
+              <% if @webhooks_configuration.present? %>
+                <ul>
+                  <% @webhooks_configuration.each do |webhook| %>
+                  <li><%= webhook.topic %> : <%= webhook.address %></li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <div class="alert alert-warning" role="alert">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </svg>
+                  This app has not created any webhooks for this Shop.
+                  Add webhooks to your ShopifyApp initializer if you need webhooks
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <%# Webhooks configuration END %>
+
+        <%# Audit BEGIN %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-row bd-highlight pt-3 pb-3 align-items-center">
+              <div class="bd-highlight"><%= image_tag "log-icon.png", size: 60 %></div>
+              <div class="bd-highlight">
+                <h3 class="title-font m-0">Audit</h3>
+                <h5 class="title-font secondary-font-color m-0">
+                  Check log of latest actions done by the sync manager
+                </h5>
+              </div>
+            </div>
+            <div class="m-2">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">Operation</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Started at</th>
+                    <th scope="col">Succeeded at</th>
+                    <th scope="col">Failed at</th>
+                    <th scope="col">Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @audits.each do |audit| %>
+                    <tr>
+                      <td><%= audit.operation_id%></td>
+                      <td>
+                        <span class="badge bg-<%= audit.status == 'failed' ? "danger" : "success" %>">
+                          <%= audit.status %>
+                        </span>
+                      </td>
+                      <td><%= audit.started_at%></td>
+                      <td><%= audit.succeeded_at%></td>
+                      <td><%= audit.failed_at%></td>
+                      <td><%= audit.message%></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <%# Audit END %>
+
+        <%# Webhooks BEGIN %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-row bd-highlight pt-3 pb-3 align-items-center">
+              <div class="bd-highlight"><%= image_tag "webhook-icon.png", size: 60 %></div>
+              <div class="bd-highlight">
+                <h3 class="title-font m-0">Webhooks</h3>
+                <h5 class="title-font secondary-font-color m-0">
+                  Check log of latest Shopify webhooks handled by the sync manager
+                </h5>
+              </div>
+            </div>
+            <div class="m-2">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">Topic</th>
+                    <th scope="col">Shop domain</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Succeeded at</th>
+                    <th scope="col">Failed at</th>
+                    <th scope="col">Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @webhooks.each do |webhook| %>
+                    <tr>
+                      <td><%= webhook.topic%></td>
+                      <td><%= webhook.shop_domain%></td>
+                      <td>
+                        <span class="badge bg-<%= webhook.status == 'failed' ? "danger" : "success" %>">
+                          <%= webhook.status %>
+                        </span>
+                      </td>
+                      <td><%= webhook.succeeded_at%></td>
+                      <td><%= webhook.failed_at%></td>
+                      <td><%= webhook.message%></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <%# Webhooks END %>
+      </div>
+    </div>
   </body>
 </html>
