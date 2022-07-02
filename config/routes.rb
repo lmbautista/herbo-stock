@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   namespace :shopify do
     namespace :webhooks do
       post :app_uninstalled, controller: "app_uninstalled", action: :create
+      post :product_updated, controller: "product_updated", action: :create
     end
   end
 
