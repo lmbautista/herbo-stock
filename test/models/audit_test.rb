@@ -59,4 +59,17 @@ class AuditTest < ActiveSupport::TestCase
       assert audit.failed?
     end
   end
+
+  test "shopify_domain is required" do
+    webhook = build(:audit, shop_domain: nil)
+
+    assert webhook.invalid?
+    assert webhook.errors.added?(:shop_domain, :blank)
+  end
+
+  test "#shop" do
+    webhook = create(:audit)
+
+    assert webhook.shop.persisted?
+  end
 end

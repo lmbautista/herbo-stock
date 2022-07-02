@@ -16,12 +16,17 @@ class Audit < ApplicationRecord
              }.freeze
 
   validates :operation_id, presence: true
+  validates :shop_domain, presence: true
   validates :status, presence: true, inclusion: { in: STATUSES }
   validates :raw_params, presence: true
 
   validates :started_at, presence: true
   validates :succeeded_at, presence: true, if: :succeeded?
   validates :failed_at, presence: true, if: :failed?
+
+  def shop
+    @shop ||= Shop.find_by(shopify_domain: shop_domain)
+  end
 
   def succeeded?
     attribute_in_database(:status) == STATUS_SUCCEEDED ||

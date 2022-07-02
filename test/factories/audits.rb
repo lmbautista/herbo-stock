@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :audit do
     operation_id { "Shops::Shopify::Catalog::Load" }
+    shop_domain { create(:shop).shopify_domain }
     raw_params { "{\"a\":1,\"b\":2}" }
     status { Audit::STATUS_STARTED }
     started_at { Time.current }
