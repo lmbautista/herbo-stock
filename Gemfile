@@ -94,4 +94,7 @@ gem "bootstrap", "~> 5.1.3"
 gem "jquery-rails"
 gem "sass-rails"
 
+# Pagination
+gem "kaminari"
+
 gem "shopify_app", "~>19.0.1"
