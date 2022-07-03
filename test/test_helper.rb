@@ -22,4 +22,9 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+
+  def with_shopify_session(shop, &block)
+    stubbed_session = ShopifyAPI::Auth::Session.new(shop: shop.shopify_domain)
+    ShopifyAPI::Utils::SessionUtils.stub(:load_current_session, stubbed_session, &block)
+  end
 end
