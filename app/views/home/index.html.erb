@@ -43,6 +43,13 @@
               }
             });
         }();
+
+        var fetchAudits = function() {
+          var headers = new Headers({ "Authorization": "Bearer " + window.sessionToken });
+          return fetch("/audits", { headers })
+            .then(response => response.text())
+            .then(data => document.getElementById("audits").innerHTML = data);
+        }();
       });
     </script>
   </head>
@@ -76,6 +83,19 @@
         </div>
         <%# Products END %>
 
+        <div id="audits">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex flex-row justify-content-center bd-highlight pt-3 pb-3 align-items-center">
+                <div class="bd-highlight text-center">
+                  <%= image_tag "loading.gif", size: 60 %>
+                  <h6 class="title-font m-0">loading</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <%# Webhooks configuration BEGIN %>
         <div class="card mb-3">
           <div class="card-body">
@@ -108,52 +128,6 @@
           </div>
         </div>
         <%# Webhooks configuration END %>
-
-        <%# Audit BEGIN %>
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex flex-row bd-highlight pt-3 pb-3 align-items-center">
-              <div class="bd-highlight"><%= image_tag "log-icon.png", size: 60 %></div>
-              <div class="bd-highlight">
-                <h3 class="title-font m-0">Audit</h3>
-                <h5 class="title-font secondary-font-color m-0">
-                  Check log of latest actions done by the sync manager
-                </h5>
-              </div>
-            </div>
-            <div class="m-2">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th scope="col">Operation</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Started at</th>
-                    <th scope="col">Succeeded at</th>
-                    <th scope="col">Failed at</th>
-                    <th scope="col">Message</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @audits.each do |audit| %>
-                    <tr>
-                      <td><%= audit.operation_id%></td>
-                      <td>
-                        <span class="badge bg-<%= audit.status == 'failed' ? "danger" : "success" %>">
-                          <%= audit.status %>
-                        </span>
-                      </td>
-                      <td><%= audit.started_at%></td>
-                      <td><%= audit.succeeded_at%></td>
-                      <td><%= audit.failed_at%></td>
-                      <td><%= audit.message%></td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <%# Audit END %>
 
         <%# Webhooks BEGIN %>
         <div class="card mb-3">

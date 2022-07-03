@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
   root to: "home#index"
 
+  get "/audits", to: "audits#index"
   get "/products", to: "products#index"
 
   namespace :shopify do
