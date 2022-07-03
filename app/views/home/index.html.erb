@@ -44,12 +44,26 @@
             });
         }();
 
-        var fetchAudits = function() {
+        var bindAuditPagination = function() {
+          $(".pagination-link").click(function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var url = $(this).attr("href");
+            fetchAudits(url);
+          });
+        };
+
+        var fetchAudits = function(url = "/audits") {
           var headers = new Headers({ "Authorization": "Bearer " + window.sessionToken });
-          return fetch("/audits", { headers })
+          return fetch(url, { headers })
             .then(response => response.text())
-            .then(data => document.getElementById("audits").innerHTML = data);
-        }();
+            .then(data => {
+              document.getElementById("audits").innerHTML = data;
+              bindAuditPagination();
+            });
+        };
+
+        fetchAudits();
       });
     </script>
   </head>
