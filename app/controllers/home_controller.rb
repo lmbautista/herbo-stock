@@ -8,9 +8,6 @@ class HomeController < ApplicationController
   def index
     @shop_origin = current_shopify_domain
     @host = params[:host]
-    @webhooks_configuration = ShopifyAPI::Webhook.all(limit: 10, session: shop_session)
-    @audits = Audit.order(id: :desc).limit(10)
-    @webhooks = V1::Webhook.order(id: :desc).limit(10)
   end
 
   private
