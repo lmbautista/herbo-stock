@@ -11,6 +11,10 @@ module Catalog
       @responses = []
     end
 
+    def model_name
+      Struct.new(:param_key).new(:catalog_loader)
+    end
+
     def call
       load_catalog
       return Response.success(input_path) if responses.all?(&:success?)

@@ -4,11 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tag %>
     <script>
       document.addEventListener("DOMContentLoaded", async function() {
-
-          await import("lib/shopify_app")
-
+        await import("lib/shopify_app")
 
         var SessionToken = window["app-bridge"].actions.SessionToken
         var app = window.app;
@@ -84,6 +83,26 @@
 
         fetchAudits();
         fetchWebhooks();
+
+        var postCatalogLoader = function(url) {
+          var headers = new Headers({
+            "Authorization": "Bearer " + window.sessionToken,
+            "Content-Type": "application/json"
+          });
+          return fetch(url, { method: 'POST', headers })
+            .then(response => response.text())
+            .then(data => {
+              HTMLsuccessfulMessage = "<%= j render(partial: 'catalog_loader/success') %>"
+              document.getElementById("catalog_loader_msg").innerHTML = HTMLsuccessfulMessage;
+            });
+        };
+
+        $("#new_catalog_loader").on("submit", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          postCatalogLoader("/catalog_loader?" + $(this).serialize());
+        });
       });
     </script>
   </head>
@@ -93,29 +112,14 @@
         <div class="d-flex flex-row bd-highlight mb-1 align-items-center">
           <div class="p-2 bd-highlight"><%= image_tag "logo.png", size: 90 %></div>
           <div class="p-2 bd-highlight">
-            <h1 class="title-font m-0 inline">HerboMadrid</h1>
-            <h3 class="title-font secondary-font-color m-0 inline"> # stock controller</h3>
-            <h6>Provider catalog sync manager</h6>
+            <h1 class="title-font m-0">HerboMadrid</h1>
+            <h3 class="title-font secondary-font-color m-0">Provider's catalog manager</h3>
           </div>
         </div>
+
+        <%= render partial: "catalog_loader/new" %>
 
         <hr/>
-
-        <%# Products BEGIN %>
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex flex-row bd-highlight pt-3 pb-3 align-items-center">
-              <div class="bd-highlight"><%= image_tag "product-icon.png", size: 60 %></div>
-              <div class="bd-highlight">
-                <h3 class="title-font m-0">Products</h3>
-              </div>
-            </div>
-            <div class="m-2">
-              <div id="products"><br>Loading...</div>
-            </div>
-          </div>
-        </div>
-        <%# Products END %>
 
         <div id="audits">
           <div class="card mb-3">

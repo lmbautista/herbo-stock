@@ -2,7 +2,8 @@
 
 class CatalogLoaderController < AuthenticatedController
   def create
-    CatalogLoaderJob.perform_later(**create_params)
+    job_params = create_params.merge(shop_domain: current_shopify_session.shop)
+    CatalogLoaderJob.perform_later(**job_params)
 
     head :ok
   end
@@ -14,6 +15,5 @@ class CatalogLoaderController < AuthenticatedController
       .require(:catalog_loader)
       .permit(product_ids: [])
       .to_h
-      .merge(shop_domain: current_shopify_session.shop)
   end
 end

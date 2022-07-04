@@ -1,0 +1,20 @@
+<div class="m-2">
+  <h5 class="title-font mb-4" >Sync the products of your store with the provider's catalog</h5>
+  <div id="catalog_loader_msg" class="mt-2 mb-2"></div>
+  <%= form_with model: Catalog::Loader.new("", nil),
+                url: catalog_loader_path,
+                id: "new_catalog_loader" do |form| %>
+    <div class="form-group">
+      <%= label :catalog_loader, :product_ids, "Product IDs" %>
+      <%= form.select :product_ids, @products,
+                      { prompt: "Please select one or more products" },
+                      { multiple: true, size: 5, class: "form-control" } %>
+      <small id="productIds" class="form-text text-muted">
+        This will trigger a filtered loader.
+        If it's empty, all the catalog will be loaded by default
+      </small>
+    </div>
+    <br/>
+    <%= form.submit "Load", data: { confirm: "Are you sure?" }, class: "btn btn-primary border border-dark" %>
+  <% end %>
+</div>
