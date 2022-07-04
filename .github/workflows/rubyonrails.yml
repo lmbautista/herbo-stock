@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
+      SHOPIFY_API_KEY: 12345
+      SHOPIFY_API_SECRET: 12345
+      SHOP: herbomadrid-test.myshopify.com
+      SCOPES: write_products,write_customers,write_draft_orders
+      HOST: https://f761-82-158-184-94.ngrok.io
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
