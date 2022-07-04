@@ -28,6 +28,19 @@ module Catalog
       end
     end
 
+    test "success with filtered product ids" do
+      shop = create(:shop)
+      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id, 1004)
+
+      assert_difference "Audit.succeeded.count", +1 do
+        assert_no_difference "V1::Product.count" do
+          response = loader.call
+
+          assert response.success?
+        end
+      end
+    end
+
     test "fails due to shopify upsert" do
       shop = create(:shop)
       loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)

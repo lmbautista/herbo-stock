@@ -4,9 +4,10 @@ module Catalog
   class Loader
     include WithAudit
 
-    def initialize(input_path, shop_id)
+    def initialize(input_path, shop_id, product_ids = [])
       @input_path = input_path
       @shop_id = shop_id
+      @product_ids = Array.wrap(product_ids).map(&:to_s)
       @responses = []
     end
 
@@ -20,19 +21,29 @@ module Catalog
 
     private
 
-    attr_reader :responses, :input_path, :shop_id
+    attr_reader :responses, :input_path, :shop_id, :product_ids
 
     def load_catalog
-      CSV.read(input_path, **csv_options).each do |row_data|
+      CSV.read(input_path, **csv_options).take(3).each do |row_data|
         adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
 
         with_audit(operation_id: operation_id, params: row_data, shop: shop) do
-          generate_product_with_response(adapter)
-            .and_then { |product| save_product_with_response(product) }
-            .and_then { |product| upsert_shopify_product_with_response(product) }
-            .on_failure { |error| responses << Response.failure(error) }
+          next Response.success(row_data) unless valid_product_id?(row_data["id"])
+
+          build_and_sync_shopify_product(adapter)
         end
       end
+    end
+
+    def valid_product_id?(product_id)
+      product_ids.empty? || (product_ids.any? && product_ids.include?(product_id.to_s))
+    end
+
+    def build_and_sync_shopify_product(adapter)
+      generate_product_with_response(adapter)
+        .and_then { |product| save_product_with_response(product) }
+        .and_then { |product| upsert_shopify_product_with_response(product) }
+        .on_failure { |error| responses << Response.failure(error) }
     end
 
     def csv_options
