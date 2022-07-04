@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "/audits", to: "audits#index"
   get "/products", to: "products#index"
   get "/webhooks", to: "webhooks#index"
+  post "/catalog_loader", to: "catalog_loader#create"
 
   namespace :shopify do
     namespace :webhooks do
