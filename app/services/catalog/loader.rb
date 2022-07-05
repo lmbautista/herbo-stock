@@ -7,7 +7,7 @@ module Catalog
     def initialize(input_path, shop_id, product_ids = [])
       @input_path = input_path
       @shop_id = shop_id
-      @product_ids = Array.wrap(product_ids).map(&:to_s)
+      @product_ids = Array.wrap(product_ids).select(&:present?).map(&:to_s)
       @responses = []
     end
 
