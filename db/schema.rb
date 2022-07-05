@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_02_165342) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_05_151320) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -56,12 +56,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_02_165342) do
     t.float "pvd_iva_rec", null: false
     t.float "pvp", null: false
     t.float "peso", null: false
-    t.string "ean", null: false
+    t.string "ean"
     t.boolean "hay_foto", null: false
     t.string "imagen", null: false
     t.datetime "fecha_imagen", null: false
     t.string "cat", null: false
-    t.string "marca", null: false
+    t.string "marca"
     t.boolean "frio", null: false
     t.boolean "congelado", null: false
     t.boolean "bio", null: false
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_02_165342) do
     t.boolean "huevo", null: false
     t.boolean "lactosa", null: false
     t.boolean "apto_vegano", null: false
-    t.string "unidad_medida", null: false
+    t.string "unidad_medida"
     t.float "cantidad_medida", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
