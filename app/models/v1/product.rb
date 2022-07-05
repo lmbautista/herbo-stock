@@ -26,12 +26,10 @@ module V1
                     numericality: { only_float: true, greater_than_or_equal_to: 0.0 }
     validates :peso, presence: true,
                      numericality: { only_float: true, greater_than_or_equal_to: 0.0 }
-    validates :ean, presence: true
     validates :hay_foto, inclusion: [true, false]
     validates :imagen, presence: true
     validates :fecha_imagen, presence: true
     validates :cat, presence: true
-    validates :marca, presence: true
     validates :frio, inclusion: [true, false]
     validates :congelado, inclusion: [true, false]
     validates :bio, inclusion: [true, false]
@@ -40,7 +38,6 @@ module V1
     validates :huevo, inclusion: [true, false]
     validates :lactosa, inclusion: [true, false]
     validates :apto_vegano, inclusion: [true, false]
-    validates :unidad_medida, presence: true
     validates :cantidad_medida, presence: true,
                                 numericality: { only_float: true, greater_than_or_equal_to: 0.0 }
 

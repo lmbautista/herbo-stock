@@ -88,13 +88,6 @@ module V1
       assert product.errors.added?(:peso, :blank)
     end
 
-    test "ean is required" do
-      product = build(:v1_product, ean: nil)
-
-      assert product.invalid?
-      assert product.errors.added?(:ean, :blank)
-    end
-
     test "hay_foto is invalid" do
       product = build(:v1_product, hay_foto: nil)
 
@@ -121,13 +114,6 @@ module V1
 
       assert product.invalid?
       assert product.errors.added?(:cat, :blank)
-    end
-
-    test "marca is required" do
-      product = build(:v1_product, marca: nil)
-
-      assert product.invalid?
-      assert product.errors.added?(:marca, :blank)
     end
 
     test "frio is invalid" do
@@ -184,13 +170,6 @@ module V1
 
       assert product.invalid?
       assert product.errors.added?(:apto_vegano, :inclusion, value: nil)
-    end
-
-    test "unidad_medida is required" do
-      product = build(:v1_product, unidad_medida: nil)
-
-      assert product.invalid?
-      assert product.errors.added?(:unidad_medida, :blank)
     end
 
     test "cantidad_medida is required" do
