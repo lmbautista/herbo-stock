@@ -7,7 +7,7 @@ class WebhooksController < AuthenticatedController
   def index
     @webhooks_configuration = ShopifyAPI::Webhook.all(limit: 10)
     @webhooks = V1::Webhook.where(shop_domain: current_shopify_session.shop)
-      .order(id: :asc)
+      .order(id: :desc)
       .page(page).per(per_page)
 
     render action: "index", layout: false

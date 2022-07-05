@@ -41,8 +41,8 @@ class AuditsControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :ok
       assert_template :index
-      assert_includes @controller.view_assigns["audits"], audit_one
-      assert_not_includes @controller.view_assigns["audits"], audit_two
+      assert_includes @controller.view_assigns["audits"], audit_two
+      assert_not_includes @controller.view_assigns["audits"], audit_one
     end
   end
 end

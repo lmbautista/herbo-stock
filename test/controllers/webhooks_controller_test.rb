@@ -46,8 +46,8 @@ class WebhooksControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :ok
       assert_template :index
-      assert_includes @controller.view_assigns["webhooks"], webhook_one
-      assert_not_includes @controller.view_assigns["webhooks"], webhook_two
+      assert_includes @controller.view_assigns["webhooks"], webhook_two
+      assert_not_includes @controller.view_assigns["webhooks"], webhook_one
       assert_not_includes @controller.view_assigns["webhooks_configuration"], webhooks
     end
   end

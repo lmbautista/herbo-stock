@@ -6,7 +6,7 @@ class AuditsController < AuthenticatedController
 
   def index
     @audits = Audit.where(shop_domain: current_shopify_session.shop)
-      .order(id: :asc)
+      .order(id: :desc)
       .page(page).per(per_page)
 
     render action: "index", layout: false
