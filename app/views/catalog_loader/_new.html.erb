@@ -18,3 +18,30 @@
     <%= form.submit "Load", data: { confirm: "Are you sure?" }, class: "btn btn-primary border border-dark" %>
   <% end %>
 </div>
+
+<script>
+  var postCatalogLoader = function(url) {
+    var headers = new Headers({
+      "Authorization": "Bearer " + window.sessionToken,
+      "Content-Type": "application/json"
+    });
+    return fetch(url, { method: 'POST', headers })
+      .then(response => response.text())
+      .then(data => {
+        HTMLsuccessfulMessage = "<%= j render(partial: 'catalog_loader/success') %>"
+        document.getElementById("catalog_loader_msg").innerHTML = HTMLsuccessfulMessage;
+      });
+  };
+
+  var bindCatalogLoaderSubmit = function() {
+    $("#new_catalog_loader").on("submit", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var url = "/catalog_loader?" + $(this).serialize();
+
+      postCatalogLoader(url, window.sessionToken);
+    });
+  };
+
+  bindCatalogLoaderSubmit();
+</script>
