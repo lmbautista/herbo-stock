@@ -92,6 +92,9 @@
             .then(data => {
               HTMLsuccessfulMessage = "<%= j render(partial: 'catalog_loader/success') %>"
               document.getElementById("catalog_loader_msg").innerHTML = HTMLsuccessfulMessage;
+              setTimeout(() => {
+                document.getElementById("catalog_loader_msg").innerHTML = "";
+              }, 5000);
             });
         };
 
