@@ -10,19 +10,24 @@
       document.addEventListener("DOMContentLoaded", async function() {
         await import("lib/shopify_app")
 
-        var SessionToken = window["app-bridge"].actions.SessionToken
-        var app = window.app;
+        var setSessionToken = async function() {
+          var SessionToken = window["app-bridge"].actions.SessionToken
+          var app = window.app;
 
-        app.dispatch(
-          SessionToken.request(),
-        );
+          app.dispatch(
+            SessionToken.request(),
+          );
 
-        // Save a session token for future requests
-        window.sessionToken = await new Promise((resolve) => {
-          app.subscribe(SessionToken.Action.RESPOND, (data) => {
-            resolve(data.sessionToken || "");
+          // Save a session token for future requests
+          window.sessionToken = await new Promise((resolve) => {
+            app.subscribe(SessionToken.Action.RESPOND, (data) => {
+              resolve(data.sessionToken || "");
+            });
           });
-        });
+        };
+
+        await setSessionToken();
+        setInterval(() => { setSessionToken(); }, 59000);
 
         window.auditsPage = 1;
 
