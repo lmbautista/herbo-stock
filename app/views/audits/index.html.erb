@@ -25,18 +25,9 @@
         </thead>
         <tbody>
           <% @audits.each do |audit| %>
-            <tr>
-              <td><%= audit.operation_id%></td>
-              <td>
-                <span class="badge bg-<%= audit.status == 'failed' ? "danger" : "success" %>">
-                  <%= audit.status %>
-                </span>
-              </td>
-              <td><%= audit.started_at%></td>
-              <td><%= audit.succeeded_at%></td>
-              <td><%= audit.failed_at%></td>
-              <td><%= audit.message%></td>
-            </tr>
+            <% cache audit do %>
+             <%= render partial: "audits/show", locals: { audit: audit } %>
+            <% end %>
           <% end %>
         </tbody>
       </table>
