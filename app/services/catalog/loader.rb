@@ -25,17 +25,15 @@ module Catalog
 
     private
 
-    attr_reader :responses, :input_path, :shop_id, :product_ids
+    attr_reader :responses, :input_path, :shop_id, :product_ids, :operation_id
 
     def load_catalog
       filtered_products.each do |row_data|
         adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
+        assign_current_operation_id(adapter.payload.fetch(:id))
 
         with_audit(operation_id: operation_id, params: row_data, shop: shop) do
-          generate_product_with_response(adapter)
-            .and_then { |product| save_product_with_response(product) }
-            .and_then { |product| upsert_shopify_product_with_response(product) }
-            .on_failure { |error| responses << Response.failure(error) }
+          build_and_sync_shopify_product(adapter)
         end
       end
     end
@@ -66,6 +64,14 @@ module Catalog
       Response.success(adapter.find_or_build_v1_product)
     end
 
+    def assign_current_operation_id(product_id)
+      @operation_id = "load-catalog-product##{product_id}"
+    end
+
+    def save_product_with_response(product)
+      product.save ? Response.success(product) : response_failure(product)
+    end
+
     def upsert_shopify_product_with_response(product)
       product.shopify_adapter.to_product.save_with_response
         .and_then do |shopify_product|
@@ -74,14 +80,6 @@ module Catalog
 
           external_product.save ? Response.success(product) : response_failure(external_product)
         end
-    end
-
-    def save_product_with_response(product)
-      product.save ? Response.success(product) : response_failure(product)
-    end
-
-    def operation_id
-      self.class.to_s
     end
 
     def response_failure(record)
