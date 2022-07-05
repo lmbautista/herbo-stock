@@ -24,11 +24,15 @@
           });
         });
 
+        window.auditsPage = 1;
+
         var bindAuditPagination = function() {
           $("#audits .pagination-link").click(function(e) {
             e.preventDefault();
             e.stopPropagation();
+            window.auditsPage = $('#audits .pagination .page a')[1].text;
             var url = $(this).attr("href");
+
             fetchAudits(url);
           });
         };
@@ -42,6 +46,17 @@
               bindAuditPagination();
             });
         };
+
+        var startAuditsPooling = function() {
+          if (window.auditsPollingId !== undefined) {
+            clearInterval(window.auditsPollingId);
+            window.auditsPollingId = undefined;
+          };
+
+          window.auditsPollingId = setInterval(() => {
+            fetchAudits("/audits?page=" + window.auditsPage);
+          }, 6000);
+        }
 
         var bindWebhooksPagination = function() {
           $("#webhooks .pagination-link").click(function(e) {
@@ -64,6 +79,7 @@
 
         fetchAudits();
         fetchWebhooks();
+        startAuditsPooling();
       }, { once: true });
     </script>
   </head>
