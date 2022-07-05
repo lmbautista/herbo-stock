@@ -50,17 +50,9 @@
         </thead>
         <tbody>
           <% @webhooks.each do |webhook| %>
-            <tr>
-              <td><%= webhook.topic%></td>
-              <td>
-                <span class="badge bg-<%= webhook.status == 'failed' ? "danger" : "success" %>">
-                  <%= webhook.status %>
-                </span>
-              </td>
-              <td><%= webhook.succeeded_at%></td>
-              <td><%= webhook.failed_at%></td>
-              <td><%= webhook.message%></td>
-            </tr>
+            <% cache webhook do %>
+              <%= render partial: "webhooks/show", locals: { webhook: webhook } %>
+            <% end %>
           <% end %>
         </tbody>
       </table>
