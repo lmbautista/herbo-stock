@@ -32,7 +32,7 @@ module Catalog
       shop = create(:shop)
       loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id, 1004)
 
-      assert_difference "Audit.succeeded.count", +1 do
+      assert_no_difference "Audit.count" do
         assert_no_difference "V1::Product.count" do
           response = loader.call
 
