@@ -45,4 +45,19 @@ class AuditsControllerTest < ActionDispatch::IntegrationTest
       assert_not_includes @controller.view_assigns["audits"], audit_one
     end
   end
+
+  test "success with status filtered" do
+    audit_one = create(:audit, :succeeded, succeeded_at: Time.current)
+    audit_two = create(:audit, :failed,
+                       failed_at: Time.current, shop_domain: audit_one.shop.shopify_domain)
+
+    with_shopify_session(audit_one.shop) do
+      get audits_path, params: { status: Audit::STATUS_FAILED }
+
+      assert_response :ok
+      assert_template :index
+      assert_includes @controller.view_assigns["audits"], audit_two
+      assert_not_includes @controller.view_assigns["audits"], audit_one
+    end
+  end
 end

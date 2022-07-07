@@ -29,7 +29,10 @@
         await setSessionToken();
         setInterval(() => { setSessionToken(); }, 59000);
 
+        const DEFAULT_AUDITS_FILTER = { status: null };
+
         window.auditsPage = 1;
+        window.auditsFilter = DEFAULT_AUDITS_FILTER;
 
         var bindAuditPagination = function() {
           $("#audits .pagination-link").click(function(e) {
@@ -42,26 +45,53 @@
           });
         };
 
+        var stopAuditsPooling = function() {
+          if (window.auditsPollingId !== undefined) {
+            clearInterval(window.auditsPollingId);
+            window.auditsPollingId = undefined;
+          };
+        };
+
+        var startAuditsPooling = function() {
+          window.auditsPollingId = setInterval(() => {
+            var params = { page: window.auditsPage, status: window.auditsFilter.status }
+            Object.keys(params).forEach(key => { if (params[key] === null) { delete params[key]; } });
+
+            fetchAudits("/audits?" + $.param(params));
+          }, 6000);
+        }
+
+        var bindAuditsFilterSubmit = function() {
+          $("#audits_filter").on("submit", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.auditsFilter.status = $('#audits_filter #status option:selected').val();
+            var url = "/audits?" + $(this).serialize();
+
+            stopAuditsPooling();
+            fetchAudits(url);
+            startAuditsPooling();
+          });
+        };
+
+        var clearAuditsFilter = function() {
+          window.auditsFilter = DEFAULT_AUDITS_FILTER;
+
+          stopAuditsPooling();
+          fetchAudits(url);
+          startAuditsPooling();
+        };
+
         var fetchAudits = function(url = "/audits") {
           var headers = new Headers({ "Authorization": "Bearer " + window.sessionToken });
           return fetch(url, { headers })
             .then(response => response.text())
             .then(data => {
               document.getElementById("audits").innerHTML = data;
+
               bindAuditPagination();
             });
         };
-
-        var startAuditsPooling = function() {
-          if (window.auditsPollingId !== undefined) {
-            clearInterval(window.auditsPollingId);
-            window.auditsPollingId = undefined;
-          };
-
-          window.auditsPollingId = setInterval(() => {
-            fetchAudits("/audits?page=" + window.auditsPage);
-          }, 6000);
-        }
 
         var bindWebhooksPagination = function() {
           $("#webhooks .pagination-link").click(function(e) {
@@ -105,12 +135,15 @@
             var url = "/catalog_loader?" + $(this).serialize();
 
             postCatalogLoader(url, window.sessionToken);
+            stopAuditsPooling();
+            startAuditsPooling();
           });
         };
 
 
         fetchAudits();
         startAuditsPooling();
+        bindAuditsFilterSubmit();
         fetchWebhooks();
         bindCatalogLoaderSubmit();
       }, { once: true });
@@ -131,14 +164,25 @@
 
         <hr/>
 
-        <div id="audits">
-          <div class="card mb-3">
-            <div class="card-body">
-              <div class="d-flex flex-row justify-content-center bd-highlight pt-3 pb-3 align-items-center">
-                <div class="bd-highlight text-center">
-                  <%= image_tag "loading.gif", size: 60 %>
-                  <h6 class="title-font m-0">loading</h6>
-                </div>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-row bd-highlight pb-3">
+              <div class="bd-highlight"><%= image_tag "log-icon.png", size: 60 %></div>
+              <div class="bd-highlight">
+                <h3 class="title-font m-0">Audit</h3>
+                <h5 class="title-font secondary-font-color m-0">
+                  Check log of latest actions done by the sync manager
+                </h5>
+              </div>
+            </div>
+            <div class="d-flex flex-column bd-highlight pt-3 pb-3">
+              <div class="bd-highlight">
+                <%= render partial: "audits/filter" %>
+                <hr/>
+              </div>
+              <div class="bd-highlight text-center" id="audits">
+                <%= image_tag "loading.gif", size: 60 %>
+                <h6 class="title-font m-0">loading</h6>
               </div>
             </div>
           </div>

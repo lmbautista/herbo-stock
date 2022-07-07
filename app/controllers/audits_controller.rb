@@ -5,7 +5,8 @@ class AuditsController < AuthenticatedController
   DEFAULT_PER_PAGE = 10
 
   def index
-    @audits = Audit.where(shop_domain: current_shopify_session.shop)
+    @audits = Audit
+      .where(search_params)
       .order(id: :desc)
       .page(page).per(per_page)
 
@@ -13,10 +14,20 @@ class AuditsController < AuthenticatedController
   end
 
   def per_page
-    params[:per_page].presence || DEFAULT_PER_PAGE
+    pagination_params.fetch(:per_page, DEFAULT_PER_PAGE)
   end
 
   def page
-    params[:page].presence || DEFAULT_PAGE
+    pagination_params.fetch(:page, DEFAULT_PAGE)
+  end
+
+  def search_params
+    params.permit(:status).to_h
+      .merge(shop_domain: current_shopify_session.shop)
+      .compact
+  end
+
+  def pagination_params
+    params.permit(:per_page, :page).to_h
   end
 end
