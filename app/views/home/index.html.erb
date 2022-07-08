@@ -30,15 +30,17 @@
         setInterval(() => { setSessionToken(); }, 59000);
 
         const DEFAULT_AUDITS_FILTER = { status: null };
+        const DEFAULT_AUDITS_PAGE = 1;
 
-        window.auditsPage = 1;
+        window.auditsPage = DEFAULT_AUDITS_PAGE;
         window.auditsFilter = DEFAULT_AUDITS_FILTER;
 
         var bindAuditPagination = function() {
           $("#audits .pagination-link").click(function(e) {
             e.preventDefault();
             e.stopPropagation();
-            window.auditsPage = $('#audits .pagination .page a')[1].text;
+
+            window.auditsPage = $(this).html();
             var url = $(this).attr("href");
 
             fetchAudits(url);
@@ -65,6 +67,7 @@
           $("#audits_filter").on("submit", function(e) {
             e.preventDefault();
             e.stopPropagation();
+            window.auditsPage = DEFAULT_AUDITS_PAGE;
             window.auditsFilter.status = $('#audits_filter #status option:selected').val();
             var url = "/audits?" + $(this).serialize();
 
@@ -76,6 +79,7 @@
 
         var clearAuditsFilter = function() {
           window.auditsFilter = DEFAULT_AUDITS_FILTER;
+          window.auditsPage = DEFAULT_AUDITS_PAGE;
 
           stopAuditsPooling();
           fetchAudits(url);
