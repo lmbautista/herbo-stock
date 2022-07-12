@@ -371,6 +371,14 @@ module V1
                        ActiveModel::Type::Boolean.new.cast(adapter.variant_requires_shipping)
         end
 
+        test "status is archived when disponible is zero" do
+          expected_status = "archived"
+          product = build(:v1_product, **product_attrs.merge(disponible: 0))
+          adapter = Adapter.new(product)
+
+          assert_equal expected_status, adapter.status
+        end
+
         private
 
         def product_attrs

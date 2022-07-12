@@ -159,7 +159,8 @@ module V1
         end
 
         def status
-          "active"
+          return "active" if product.disponible.positive?
+          return "archived" if product.disponible.zero?
         end
 
         def to_csv # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
