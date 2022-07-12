@@ -93,6 +93,7 @@ gem "virtus"
 gem "bootstrap", "~> 5.1.3"
 gem "jquery-rails"
 gem "sass-rails"
+gem "select2-rails"
 
 # Pagination
 gem "kaminari"

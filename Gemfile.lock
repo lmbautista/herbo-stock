@@ -288,6 +288,7 @@ GEM
       sprockets-rails
       tilt
     securerandom (0.2.0)
+    select2-rails (4.0.13)
     selenium-webdriver (4.2.1)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -386,6 +387,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails
   sass-rails
+  select2-rails
   selenium-webdriver
   shopify_app (~> 19.0.1)
   sprockets-rails
