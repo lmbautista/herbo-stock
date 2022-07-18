@@ -42,6 +42,17 @@ class AuditTest < ActiveSupport::TestCase
     assert audit.errors.added?(:succeeded_at, :blank)
   end
 
+  test "#succeeded_with_message!" do
+    expected_message = "message"
+    audit = create(:audit)
+
+    assert_changes -> { audit.reload.message }, to: expected_message do
+      audit.succeeded_with_message!(expected_message)
+
+      assert audit.succeeded?
+    end
+  end
+
   test "failed_at is required if status is failed" do
     audit = build(:audit, :failed, failed_at: nil)
 
