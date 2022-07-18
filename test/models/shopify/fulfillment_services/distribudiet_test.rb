@@ -48,7 +48,7 @@ module Shopify
 
       def create_params
         {
-          "callback_url" => "https://6798-82-158-184-94.ngrok.io",
+          "callback_url" => ENV.fetch("HOST", nil),
           "format" => "json",
           "inventory_management" => true,
           "name" => "Distribudiet Fulfillment",
@@ -60,7 +60,7 @@ module Shopify
       def fulfillment_service_params
         {
           "admin_graphql_api_id" => "gid://shopify/ApiFulfillmentService/61749559542",
-          "callback_url" => "https://6798-82-158-184-94.ngrok.io/",
+          "callback_url" => ENV.fetch("HOST", nil),
           "fulfillment_orders_opt_in" => false,
           "handle" => "distribudiet-fulfillment",
           "id" => 61_749_559_542,
