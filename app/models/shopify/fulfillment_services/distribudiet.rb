@@ -3,6 +3,8 @@
 module Shopify
   module FulfillmentServices
     class Distribudiet
+      SERVICE_NAME = "Distribudiet Fulfillment"
+
       def initialize(shop_id)
         @shop_id = shop_id
       end
@@ -46,9 +48,6 @@ module Shopify
       def shop
         @shop ||= ::Shop.find(shop_id)
       end
-
-      SERVICE_NAME = "Distribudiet Fulfillment"
-      private_constant :SERVICE_NAME
     end
   end
 end
