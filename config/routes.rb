@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get "/audits", to: "audits#index"
+  get "/fetch_stock", to: "fetch_stock#show"
   get "/products", to: "products#index"
   get "/webhooks", to: "webhooks#index"
   post "/catalog_loader", to: "catalog_loader#create"
