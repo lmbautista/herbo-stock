@@ -27,4 +27,12 @@ class ActiveSupport::TestCase
     stubbed_session = ShopifyAPI::Auth::Session.new(shop: shop.shopify_domain)
     ShopifyAPI::Utils::SessionUtils.stub(:load_current_session, stubbed_session, &block)
   end
+
+  def with_offline_shopify_session(shop)
+    stubbed_session = ShopifyAPI::Auth::Session.new(shop: shop.shopify_domain)
+
+    ShopifyAPI::Utils::SessionUtils.stub(:load_offline_session, stubbed_session) do
+      yield(stubbed_session)
+    end
+  end
 end
