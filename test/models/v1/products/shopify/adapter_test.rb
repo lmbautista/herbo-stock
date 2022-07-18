@@ -176,7 +176,7 @@ module V1
         end
 
         test "#variant_fulfillment_service" do
-          expected_variant_fulfillment_service = "manual"
+          expected_variant_fulfillment_service = "distribudiet-fulfillment"
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
@@ -313,7 +313,7 @@ module V1
         end
 
         test "#to_csv" do
-          expected_payload = "a30906cdd4a829e0d705172663c766ac"
+          expected_payload = "f18eb7515f74e20a9029e6d1614c501c"
           product = build(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 

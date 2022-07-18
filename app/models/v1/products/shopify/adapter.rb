@@ -88,7 +88,7 @@ module V1
         end
 
         def variant_fulfillment_service
-          "manual"
+          ::Shopify::FulfillmentServices::Distribudiet::SERVICE_NAME.parameterize
         end
 
         def variant_ean
