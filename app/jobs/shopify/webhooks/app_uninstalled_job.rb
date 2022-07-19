@@ -21,6 +21,7 @@ module Shopify
           ActiveRecord::Base.transaction do
             destroy_shop_with_response
               .and_then { webhook_succeeded_with_response }
+              .and_then { response_success }
               .on_failure { |error_messasge| webhook_failed_with_response(error_messasge) }
           end
         end
@@ -64,6 +65,12 @@ module Shopify
         error_message = [id_error_message, record.errors.full_messages.to_sentence].join(" ")
 
         Response.failure(error_message)
+      end
+
+      def response_success
+        message = "App was uninstalled successfully from shop #{shop_domain}"
+
+        Response.success(message)
       end
     end
   end

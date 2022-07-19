@@ -29,10 +29,14 @@ module Shopify
           shop_domain: shop.shopify_domain,
           body: webhook_params
         }
+        expected_message = "App was uninstalled successfully from shop #{shop.shopify_domain}"
 
         assert_difference "V1::Webhook.succeeded.count", +1 do
           assert_difference "::Shop.count", -1 do
-            AppUninstalledJob.new.perform(**job_params)
+            response = AppUninstalledJob.new.perform(**job_params)
+
+            assert response.success?
+            assert_equal expected_message, response.value
           end
         end
       end
@@ -44,6 +48,7 @@ module Shopify
           shop_domain: shop.shopify_domain,
           body: webhook_params
         }
+        expected_message = "Shop##{shop.id}: whatever goes wrong"
 
         ar_errors = mock
         ar_errors.expects(:full_messages).returns(Array.wrap("whatever goes wrong"))
@@ -53,7 +58,10 @@ module Shopify
 
         assert_difference "V1::Webhook.failed.count", +1 do
           assert_no_difference "::Shop.count" do
-            AppUninstalledJob.new.perform(**job_params)
+            response = AppUninstalledJob.new.perform(**job_params)
+
+            assert response.failure?
+            assert_equal expected_message, response.value
           end
         end
       end
