@@ -25,14 +25,12 @@ module Catalog
 
     private
 
-    attr_reader :responses, :input_path, :shop_id, :product_ids, :operation_id
+    attr_reader :responses, :input_path, :shop_id, :product_ids
 
     def load_catalog
       filtered_products.each do |row_data|
-        adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
-        assign_current_operation_id(adapter.payload.fetch(:id))
-
         with_audit(operation_id: operation_id, params: row_data, shop: shop) do
+          adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
           build_and_sync_shopify_product(adapter)
         end
       end
@@ -70,8 +68,8 @@ module Catalog
       Response.success(adapter.find_or_build_v1_product)
     end
 
-    def assign_current_operation_id(product_id)
-      @operation_id = "load-catalog-product##{product_id}"
+    def operation_id
+      self.class.to_s
     end
 
     def save_product_with_response(product)
