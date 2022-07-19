@@ -5,6 +5,7 @@ require "test_helper"
 module Catalog
   class LoaderTest < ActiveSupport::TestCase
     include ActiveJob::TestHelper
+    include FulfillmentServiceHelper
 
     test "has audit" do
       assert_includes Loader.included_modules, WithAudit
@@ -20,11 +21,13 @@ module Catalog
 
       assert_difference "Audit.succeeded.count", +1 do
         assert_difference "V1::Product.count", +1 do
-          response = loader.call
+          with_mocked_fulfillment_service(shop) do
+            response = loader.call
 
-          assert response.success?
-          assert V1::ProductExternalResource.exists?(external_id: external_id)
-          assert Audit.exists?(message: expected_audit_message)
+            assert response.success?
+            assert V1::ProductExternalResource.exists?(external_id: external_id)
+            assert Audit.exists?(message: expected_audit_message)
+          end
         end
       end
     end
@@ -53,10 +56,12 @@ module Catalog
 
       assert_difference "Audit.failed.count", +1 do
         assert_difference "V1::Product.count", +1 do
-          response = loader.call
+          with_mocked_fulfillment_service(shop) do
+            response = loader.call
 
-          assert response.failure?
-          assert_equal error_message.to_s, response.value
+            assert response.failure?
+            assert_equal error_message.to_s, response.value
+          end
         end
       end
     end
