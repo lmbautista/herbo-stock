@@ -27,11 +27,16 @@ module Shopify
           shop_domain: product.shop.shopify_domain,
           body: webhook_params
         }
+        expected_message = "Product '#{product.definicion}' with SKU #{product.sku} " \
+                           "was updated successfully"
 
         assert_difference "V1::Webhook.succeeded.count", +1 do
           assert_changes -> { product.reload.disponible },
                          from: original_inventory_quantity, to: updated_inventory_quantity do
-            ProductsUpdateJob.new.perform(**job_params)
+            response = ProductsUpdateJob.new.perform(**job_params)
+
+            assert response.success?
+            assert_equal expected_message, response.value
           end
         end
       end
@@ -42,10 +47,14 @@ module Shopify
           shop_domain: product.shop.shopify_domain,
           body: webhook_params("id" => 7_737_644_253_555)
         }
+        expected_message = "Product not found or availability is nil"
 
         assert_no_difference "V1::Webhook.succeeded.count" do
           assert_no_changes -> { product.reload.disponible } do
-            ProductsUpdateJob.new.perform(**job_params)
+            response = ProductsUpdateJob.new.perform(**job_params)
+
+            assert response.success?
+            assert_equal expected_message, response.value
           end
         end
       end
@@ -56,10 +65,14 @@ module Shopify
           shop_domain: product.shop.shopify_domain,
           body: webhook_params("variants" => [])
         }
+        expected_message = "Product not found or availability is nil"
 
         assert_no_difference "V1::Webhook.succeeded.count" do
           assert_no_changes -> { product.reload.disponible } do
-            ProductsUpdateJob.new.perform(**job_params)
+            response = ProductsUpdateJob.new.perform(**job_params)
+
+            assert response.success?
+            assert_equal expected_message, response.value
           end
         end
       end
@@ -70,16 +83,21 @@ module Shopify
           shop_domain: product.shop.shopify_domain,
           body: webhook_params
         }
+        expected_error_message = "whatever goes wrong"
+        expected_message = "#{product.class}##{product.id}: #{expected_error_message}"
 
         ar_errors = mock
-        ar_errors.expects(:full_messages).returns(Array.wrap("whatever goes wrong"))
+        ar_errors.expects(:full_messages).returns(Array.wrap(expected_error_message))
 
         ::V1::Product.any_instance.stubs(:update).returns(false)
         ::V1::Product.any_instance.stubs(:errors).returns(ar_errors)
 
         assert_difference "V1::Webhook.failed.count", +1 do
           assert_no_changes product do
-            ProductsUpdateJob.new.perform(**job_params)
+            response = ProductsUpdateJob.new.perform(**job_params)
+
+            assert response.failure?
+            assert_equal expected_message, response.value
           end
         end
       end

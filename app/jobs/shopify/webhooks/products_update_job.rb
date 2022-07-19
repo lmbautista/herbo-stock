@@ -21,10 +21,11 @@ module Shopify
         @body = body
 
         with_audit(operation_id: operation_id, params: body, shop: shop) do
-          return Response.success(product) if product.nil? || inventory_quantity.nil?
+          return nothing_changed_response if product.nil? || inventory_quantity.nil?
 
           update_product_quantity_with_response
             .and_then { webhook_succeeded_with_response }
+            .and_then { response_success }
             .on_failure { webhook_failed_with_response(_1) }
         end
       end
@@ -79,6 +80,16 @@ module Shopify
         error_message = [id_error_message, record.errors.full_messages.to_sentence].join(" ")
 
         Response.failure(error_message)
+      end
+
+      def response_success
+        message = "Product '#{product.definicion}' with SKU #{product.sku} was updated successfully"
+        Response.success(message)
+      end
+
+      def nothing_changed_response
+        message = "Product not found or availability is nil"
+        Response.success(message)
       end
     end
   end
