@@ -15,9 +15,18 @@ module WithAudit
 
     response
   rescue StandardError => e
-    error_message = "Unexpected exception: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+    error_message = error_message_for(e)
     audit.failed_with_message!(error_message)
 
     Response.failure(error_message)
+  end
+
+  def error_message_for(error)
+    case error
+    when RestClient::UnprocessableEntity
+      "Something was wrong to create or update resource in HTTP client"
+    else
+      "Unexpected exception: #{error.message}\n#{error.backtrace.first(5).join("\n")}"
+    end
   end
 end
