@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class Response
-  attr_reader :value
+  attr_reader :value, :resource
 
-  def initialize(success:, value: nil)
+  def initialize(success:, value: nil, resource: nil)
     @success = success
     @value = value
+    @resource = resource
   end
 
   def and_then
@@ -21,8 +22,8 @@ class Response
     self
   end
 
-  def self.success(value)
-    new(success: true, value: value)
+  def self.success(value, resource = nil)
+    new(success: true, value: value, resource: resource)
   end
 
   def self.failure(value)

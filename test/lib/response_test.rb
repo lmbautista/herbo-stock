@@ -8,7 +8,18 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.new(success: true, value: expected_value)
 
     assert response.success?
-    assert response.value, expected_value
+    assert expected_value, response.value
+    assert_nil response.resource
+  end
+
+  test "should create a response with resource" do
+    expected_value = "response_value"
+    expected_resource = { a: 1 }
+    response = Response.new(success: true, value: expected_value, resource: expected_resource)
+
+    assert response.success?
+    assert expected_value, response.value
+    assert expected_resource, response.value
   end
 
   test "should create response with nil value" do
@@ -23,7 +34,7 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.success(expected_value)
 
     assert response.success?
-    assert response.value, expected_value
+    assert expected_value, response.value
   end
 
   test "should create a failure response" do
@@ -31,7 +42,7 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.failure(expected_value)
 
     assert response.failure?
-    assert response.value, expected_value
+    assert expected_value, response.value
   end
 
   test "and_then propagate value if response success" do
