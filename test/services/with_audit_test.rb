@@ -35,7 +35,8 @@ class WithAuditTest < ActiveSupport::TestCase
   end
 
   test "success" do
-    expected_response = Response.success(:ok!)
+    expected_message = :ok!
+    expected_response = Response.success(expected_message)
     dummy = DummyService.new(params: params, response: expected_response, shop: shop)
 
     assert_difference "Audit.count", +1 do
@@ -47,11 +48,13 @@ class WithAuditTest < ActiveSupport::TestCase
       assert_equal DummyService.to_s, audit.operation_id
       assert_equal params.to_json, audit.raw_params
       assert_equal expected_response, response
+      assert_equal expected_message, response.value
     end
   end
 
   test "failed" do
-    expected_response = Response.failure(:ok!)
+    expected_message = :ko!
+    expected_response = Response.failure(expected_message)
     dummy = DummyService.new(params: params, response: expected_response, shop: shop)
 
     assert_difference "Audit.count", +1 do
@@ -63,6 +66,7 @@ class WithAuditTest < ActiveSupport::TestCase
       assert_equal DummyService.to_s, audit.operation_id
       assert_equal params.to_json, audit.raw_params
       assert_equal expected_response, response
+      assert_equal expected_message, response.value
     end
   end
 

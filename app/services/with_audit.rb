@@ -2,17 +2,16 @@
 
 module WithAudit
   def with_audit(operation_id:, shop:, params: {})
-    audit_params = {
+    audit = Audit.create(
       operation_id: operation_id,
       shop_domain: shop.shopify_domain,
       raw_params: params.to_json,
       status: Audit::STATUS_STARTED,
       started_at: Time.current
-    }
-
-    audit = Audit.create(**audit_params)
+    )
     response = yield
-    response.success? ? audit.succeeded! : audit.failed_with_message!(response.value)
+    value = response.value
+    response.success? ? audit.succeeded_with_message!(value) : audit.failed_with_message!(value)
 
     response
   rescue StandardError => e
