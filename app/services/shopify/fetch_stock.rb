@@ -11,13 +11,15 @@ module Shopify
     end
 
     def call
-      return Response.success({}) if shop.blank?
+      return no_products_response if shop.blank?
 
       with_audit(operation_id: self.class.to_s, params: params.to_h, shop: shop) do
         products = V1::Product.where(shop: shop)
         products = products.where(sku: sku) if sku.present?
 
-        Response.success(products.pluck(:sku, :disponible).to_h)
+        return no_products_response if products.empty?
+
+        response_success(products)
       end
     end
 
@@ -29,6 +31,18 @@ module Shopify
 
     def shop
       @shop ||= ::Shop.find_by(shopify_domain: shop_domain)
+    end
+
+    def response_success(products)
+      message = "Products with SKU #{products.pluck(:sku).to_sentence} found"
+      resource = products.pluck(:sku, :disponible).to_h
+
+      Response.success(message, resource)
+    end
+
+    def no_products_response
+      message = "Products not found"
+      Response.success(message, {})
     end
   end
 end
