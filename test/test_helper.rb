@@ -11,6 +11,9 @@ require "minitest/mock"
 require "webmock/minitest"
 require "mocha/minitest"
 
+# Helpers
+require "helpers/fulfillment_service_helper"
+
 class ActiveSupport::TestCase
   # Setup FactoryBot
   include FactoryBot::Syntax::Methods

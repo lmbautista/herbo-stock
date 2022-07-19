@@ -88,7 +88,11 @@ module V1
         end
 
         def variant_fulfillment_service
-          ::Shopify::FulfillmentServices::Distribudiet::SERVICE_NAME.parameterize
+          fulfillment_service.handle
+        end
+
+        def fulfillment_service
+          @fulfillment_service ||= ::Shopify::FulfillmentServices::Distribudiet.new(product.shop_id)
         end
 
         def variant_ean

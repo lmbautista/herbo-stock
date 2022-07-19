@@ -6,9 +6,11 @@ module V1
   module Products
     module Shopify
       class AdapterTest < ActiveSupport::TestCase
+        include FulfillmentServiceHelper
+
         test "#handle" do
           expected_handle = "copos-de-avena-1000gr"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.handle
@@ -17,7 +19,7 @@ module V1
 
         test "#title" do
           expected_title = "Copos de avena 1000gr"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.title
@@ -26,7 +28,7 @@ module V1
 
         test "#body_html" do
           expected_body_html = "<h1>HTML text</h1>"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.body_html
@@ -35,7 +37,7 @@ module V1
 
         test "#vendor" do
           expected_vendor = "Granovita"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.vendor
@@ -43,7 +45,7 @@ module V1
         end
 
         test "#standardized_product_type" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.standardized_product_type
@@ -51,7 +53,7 @@ module V1
 
         test "#custom_product_type" do
           expected_custom_product_type = "Desayuno y entre horas"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.custom_product_type
@@ -60,7 +62,7 @@ module V1
 
         test "#tags" do
           expected_tags = "Avena"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.tags
@@ -69,7 +71,7 @@ module V1
 
         test "#published" do
           expected_published = "TRUE"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.published
@@ -78,7 +80,7 @@ module V1
 
         test "#option1_name" do
           expected_option1_name = "Title"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.option1_name
@@ -87,7 +89,7 @@ module V1
 
         test "#option1_value" do
           expected_option1_value = "Default Title"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.option1_value
@@ -95,28 +97,28 @@ module V1
         end
 
         test "#option2_name" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.option2_name
         end
 
         test "#option2_value" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.option2_value
         end
 
         test "#option3_name" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.option3_name
         end
 
         test "#option3_value" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.option3_value
@@ -124,7 +126,7 @@ module V1
 
         test "#variant_sku" do
           expected_variant_sku = "01003"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_sku
@@ -133,7 +135,7 @@ module V1
 
         test "#variant_ean" do
           expected_variant_ean = "8423266500305"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_ean
@@ -142,7 +144,7 @@ module V1
 
         test "#variant_grams" do
           expected_variant_grams = 1000.0
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_grams
@@ -151,7 +153,7 @@ module V1
 
         test "#variant_inventory_tracker" do
           expected_invetory_tracker = "shopify"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_equal expected_invetory_tracker, adapter.variant_inventory_tracker
@@ -159,7 +161,7 @@ module V1
 
         test "#variant_inventory_qty" do
           expected_variant_inventory_qty = 36
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_inventory_qty
@@ -168,7 +170,7 @@ module V1
 
         test "#variant_inventory_policy" do
           expected_variant_inventory_policy = "deny"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_inventory_policy
@@ -177,16 +179,19 @@ module V1
 
         test "#variant_fulfillment_service" do
           expected_variant_fulfillment_service = "distribudiet-fulfillment"
-          product = build(:v1_product, **product_attrs)
-          adapter = Adapter.new(product)
+          product = create(:v1_product, **product_attrs)
 
-          assert adapter.variant_fulfillment_service
-          assert_equal expected_variant_fulfillment_service, adapter.variant_fulfillment_service
+          with_mocked_fulfillment_service(product.shop) do
+            adapter = Adapter.new(product)
+
+            assert adapter.variant_fulfillment_service
+            assert_equal expected_variant_fulfillment_service, adapter.variant_fulfillment_service
+          end
         end
 
         test "#variant_price" do
           expected_variant_price = 3.14
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_price
@@ -194,7 +199,7 @@ module V1
         end
 
         test "#variant_compare_at_price" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.variant_compare_at_price
@@ -202,7 +207,7 @@ module V1
 
         test "#variant_requires_shipping" do
           expected_variant_requires_shipping = "TRUE"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_requires_shipping
@@ -211,7 +216,7 @@ module V1
 
         test "#variant_taxable" do
           expected_variant_taxable = "TRUE"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_taxable
@@ -219,7 +224,7 @@ module V1
         end
 
         test "#variant_barcode" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.variant_barcode
@@ -227,7 +232,7 @@ module V1
 
         test "#image_src" do
           expected_image_src = "https://distribudiet.net/webstore/images/01003.jpg"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.image_src
@@ -236,7 +241,7 @@ module V1
 
         test "#image_position" do
           expected_image_position = 1
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.image_position
@@ -244,7 +249,7 @@ module V1
         end
 
         test "#image_alt_text" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.image_alt_text
@@ -252,7 +257,7 @@ module V1
 
         test "#gift_card" do
           expected_gift_card = "FALSE"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.gift_card
@@ -260,28 +265,28 @@ module V1
         end
 
         test "#seo_title" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.seo_title
         end
 
         test "#seo_description" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.seo_description
         end
 
         test "#google_shopping_default_fallback" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.google_shopping_default_fallback
         end
 
         test "#variant_image" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.variant_image
@@ -289,7 +294,7 @@ module V1
 
         test "#variant_weight_unit" do
           expected_variant_weight_unit = "g"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.variant_weight_unit
@@ -297,7 +302,7 @@ module V1
         end
 
         test "#cost_per_item" do
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert_nil adapter.cost_per_item
@@ -305,7 +310,7 @@ module V1
 
         test "#status" do
           expected_status = "active"
-          product = build(:v1_product, **product_attrs)
+          product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
           assert adapter.status
@@ -314,66 +319,74 @@ module V1
 
         test "#to_csv" do
           expected_payload = "f18eb7515f74e20a9029e6d1614c501c"
-          product = build(:v1_product, **product_attrs)
-          adapter = Adapter.new(product)
+          product = create(:v1_product, **product_attrs)
 
-          assert_equal expected_payload, Digest::MD5.hexdigest(adapter.to_csv.to_s)
+          with_mocked_fulfillment_service(product.shop) do
+            adapter = Adapter.new(product)
+
+            assert_equal expected_payload, Digest::MD5.hexdigest(adapter.to_csv.to_s)
+          end
         end
 
         test "#to_product" do
           product = create(:v1_product, **product_attrs)
           create(:v1_product_external_resource, product: product)
-          adapter = Adapter.new(product)
-          shopify_product = adapter.to_product
 
-          assert_kind_of ::Shopify::Product, shopify_product
-          assert_equal shopify_product.id, product.find_or_initialize_external_product.external_id
-          assert_equal shopify_product.shop_id, product.shop_id
-          assert_equal shopify_product.title, adapter.title
-          assert_equal shopify_product.body_html, adapter.body_html
-          assert_equal shopify_product.vendor, adapter.vendor
-          assert_equal shopify_product.product_type, adapter.custom_product_type
-          assert_equal shopify_product.handle, adapter.handle
-          assert_equal shopify_product.status, adapter.status
-          assert_equal shopify_product.tags, adapter.tags
-          assert_equal shopify_product.variants.as_json, adapter.product_variants.as_json
+          with_mocked_fulfillment_service(product.shop) do
+            adapter = Adapter.new(product)
+            shopify_product = adapter.to_product
+
+            assert_kind_of ::Shopify::Product, shopify_product
+            assert_equal shopify_product.id, product.find_or_initialize_external_product.external_id
+            assert_equal shopify_product.shop_id, product.shop_id
+            assert_equal shopify_product.title, adapter.title
+            assert_equal shopify_product.body_html, adapter.body_html
+            assert_equal shopify_product.vendor, adapter.vendor
+            assert_equal shopify_product.product_type, adapter.custom_product_type
+            assert_equal shopify_product.handle, adapter.handle
+            assert_equal shopify_product.status, adapter.status
+            assert_equal shopify_product.tags, adapter.tags
+            assert_equal shopify_product.variants.as_json, adapter.product_variants.as_json
+          end
         end
 
         test "#product_variants" do
-          product = build(:v1_product, **product_attrs)
-          adapter = Adapter.new(product)
-          shopify_product_variants = adapter.product_variants
-          shopify_product_variant = shopify_product_variants.first
+          product = create(:v1_product, **product_attrs)
+          with_mocked_fulfillment_service(product.shop) do
+            adapter = Adapter.new(product)
+            shopify_product_variants = adapter.product_variants
+            shopify_product_variant = shopify_product_variants.first
 
-          assert_kind_of Array, shopify_product_variants
-          assert_kind_of ::Shopify::ProductVariant, shopify_product_variant
-          assert_equal shopify_product_variant.price,
-                       adapter.variant_price
-          assert_equal shopify_product_variant.sku,
-                       adapter.variant_sku
-          assert_equal shopify_product_variant.barcode,
-                       adapter.variant_ean
-          assert_equal shopify_product_variant.weight,
-                       adapter.variant_grams
-          assert_equal shopify_product_variant.weight_unit,
-                       adapter.variant_weight_unit
-          assert_equal shopify_product_variant.taxable,
-                       ActiveModel::Type::Boolean.new.cast(adapter.variant_taxable)
-          assert_equal shopify_product_variant.fulfillment_service,
-                       adapter.variant_fulfillment_service
-          assert_equal shopify_product_variant.inventory_policy,
-                       adapter.variant_inventory_policy
-          assert_equal shopify_product_variant.inventory_management,
-                       adapter.variant_inventory_tracker
-          assert_equal shopify_product_variant.inventory_quantity,
-                       adapter.variant_inventory_qty
-          assert_equal shopify_product_variant.requires_shipping,
-                       ActiveModel::Type::Boolean.new.cast(adapter.variant_requires_shipping)
+            assert_kind_of Array, shopify_product_variants
+            assert_kind_of ::Shopify::ProductVariant, shopify_product_variant
+            assert_equal shopify_product_variant.price,
+                         adapter.variant_price
+            assert_equal shopify_product_variant.sku,
+                         adapter.variant_sku
+            assert_equal shopify_product_variant.barcode,
+                         adapter.variant_ean
+            assert_equal shopify_product_variant.weight,
+                         adapter.variant_grams
+            assert_equal shopify_product_variant.weight_unit,
+                         adapter.variant_weight_unit
+            assert_equal shopify_product_variant.taxable,
+                         ActiveModel::Type::Boolean.new.cast(adapter.variant_taxable)
+            assert_equal shopify_product_variant.fulfillment_service,
+                         adapter.variant_fulfillment_service
+            assert_equal shopify_product_variant.inventory_policy,
+                         adapter.variant_inventory_policy
+            assert_equal shopify_product_variant.inventory_management,
+                         adapter.variant_inventory_tracker
+            assert_equal shopify_product_variant.inventory_quantity,
+                         adapter.variant_inventory_qty
+            assert_equal shopify_product_variant.requires_shipping,
+                         ActiveModel::Type::Boolean.new.cast(adapter.variant_requires_shipping)
+          end
         end
 
         test "status is archived when disponible is zero" do
           expected_status = "archived"
-          product = build(:v1_product, **product_attrs.merge(disponible: 0))
+          product = create(:v1_product, **product_attrs.merge(disponible: 0))
           adapter = Adapter.new(product)
 
           assert_equal expected_status, adapter.status
