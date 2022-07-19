@@ -5,8 +5,8 @@
       <%= audit.status %>
     </span>
   </td>
-  <td><%= audit.started_at%></td>
-  <td><%= audit.succeeded_at%></td>
-  <td><%= audit.failed_at%></td>
+  <td><%= I18n.l(audit.started_at, format: :long) if audit.started_at.present? %></td>
+  <td><%= I18n.l(audit.succeeded_at, format: :long) if audit.succeeded_at.present? %></td>
+  <td><%= I18n.l(audit.failed_at, format: :long) if audit.failed_at.present? %></td>
   <td><%= audit.message%></td>
 </tr>
