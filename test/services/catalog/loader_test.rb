@@ -24,6 +24,7 @@ module Catalog
 
           assert response.success?
           assert V1::ProductExternalResource.exists?(external_id: external_id)
+          assert Audit.exists?(message: expected_audit_message)
         end
       end
     end
@@ -37,6 +38,7 @@ module Catalog
           response = loader.call
 
           assert response.success?
+          assert_not Audit.exists?(message: expected_audit_message)
         end
       end
     end
@@ -91,6 +93,10 @@ module Catalog
       ::Shopify::Product.any_instance
         .stubs(:save_with_response)
         .returns(response)
+    end
+
+    def expected_audit_message
+      "Product 'COPOS DE AVENA 1000GR' with SKU 01003 was loaded successfully"
     end
   end
 end

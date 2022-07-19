@@ -49,7 +49,13 @@ module Catalog
       generate_product_with_response(adapter)
         .and_then { |product| save_product_with_response(product) }
         .and_then { |product| upsert_shopify_product_with_response(product) }
-        .on_failure { |error| responses << Response.failure(error) }
+        .and_then { |product| response_success(product) }
+        .on_failure do |error|
+          response = Response.failure(error)
+          responses << response
+
+          response
+        end
     end
 
     def csv_options
@@ -87,6 +93,12 @@ module Catalog
       error_message = [id_error_message, record.errors.full_messages.to_sentence].join(" ")
 
       Response.failure(error_message)
+    end
+
+    def response_success(record)
+      message = "Product '#{record.definicion}' with SKU #{record.sku} was loaded successfully"
+
+      Response.success(message)
     end
   end
 end
