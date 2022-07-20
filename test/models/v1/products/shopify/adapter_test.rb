@@ -152,11 +152,14 @@ module V1
         end
 
         test "#variant_inventory_tracker" do
-          expected_invetory_tracker = "shopify"
+          expected_invetory_tracker = "distribudiet-fulfillment"
           product = create(:v1_product, **product_attrs)
-          adapter = Adapter.new(product)
 
-          assert_equal expected_invetory_tracker, adapter.variant_inventory_tracker
+          with_mocked_fulfillment_service(product.shop) do
+            adapter = Adapter.new(product)
+
+            assert_equal expected_invetory_tracker, adapter.variant_inventory_tracker
+          end
         end
 
         test "#variant_inventory_qty" do
@@ -318,7 +321,7 @@ module V1
         end
 
         test "#to_csv" do
-          expected_payload = "f18eb7515f74e20a9029e6d1614c501c"
+          expected_payload = "7cd77d3a0d3a57a5d1f3be55015ed83b"
           product = create(:v1_product, **product_attrs)
 
           with_mocked_fulfillment_service(product.shop) do

@@ -76,7 +76,7 @@ module V1
         end
 
         def variant_inventory_tracker
-          "shopify"
+          fulfillment_service.handle
         end
 
         def variant_inventory_qty
