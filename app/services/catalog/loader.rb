@@ -8,7 +8,7 @@ module Catalog
       @input_path = input_path
       @shop_id = shop_id
       @product_ids = Array.wrap(product_ids).select(&:present?).map(&:to_s)
-      @responses = []
+      @resume = []
     end
 
     def model_name
@@ -16,24 +16,25 @@ module Catalog
     end
 
     def call
-      load_catalog
-      return Response.success(input_path) if responses.all?(&:success?)
+      with_audit(operation_id: operation_id, params: params, shop: Shop.find(shop_id)) do
+        filtered_products.each do |row_data|
+          load_product(row_data)
+            .and_then { |_, product| upsert_shopify_product(product) }
+        end
 
-      error_message = responses.select(&:failure?).map(&:value).to_sentence
-      Response.failure(error_message)
+        Response.success(resume.to_sentence)
+      end
     end
 
     private
 
-    attr_reader :responses, :input_path, :shop_id, :product_ids
+    attr_reader :resume, :input_path, :shop_id, :product_ids
 
-    def load_catalog
-      filtered_products.each do |row_data|
-        with_audit(operation_id: operation_id, params: row_data, shop: shop) do
-          adapter = V1::Products::RawAdapter.new(row_data.to_h, shop_id)
-          build_and_sync_shopify_product(adapter)
-        end
-      end
+    def params
+      {
+        shop_id: shop_id,
+        product_ids: product_ids
+      }
     end
 
     def filtered_products
@@ -41,19 +42,6 @@ module Catalog
       return data if product_ids.blank?
 
       data.select { product_ids.include?(_1["id"].to_s) }
-    end
-
-    def build_and_sync_shopify_product(adapter)
-      generate_product_with_response(adapter)
-        .and_then { |product| save_product_with_response(product) }
-        .and_then { |product| upsert_shopify_product_with_response(product) }
-        .and_then { |product| response_success(product) }
-        .on_failure do |error|
-          response = Response.failure(error)
-          responses << response
-
-          response
-        end
     end
 
     def csv_options
@@ -64,39 +52,36 @@ module Catalog
       @shop ||= ::Shop.find(shop_id)
     end
 
-    def generate_product_with_response(adapter)
-      Response.success(adapter.find_or_build_v1_product)
-    end
-
     def operation_id
-      self.class.to_s
+      "Load catalog"
     end
 
-    def save_product_with_response(product)
-      product.save ? Response.success(product) : response_failure(product)
+    def load_product(row_data)
+      Product::Loader.new(row_data, shop.id).call
     end
 
-    def upsert_shopify_product_with_response(product)
+    def upsert_shopify_product(product)
       product.shopify_adapter.to_product.save_with_response
+        .on_failure { |error| resume << "Cannot upsert Shopify product: #{error}" }
         .and_then do |shopify_product|
           external_product = product.find_or_initialize_external_product
           external_product.external_id = shopify_product.id
 
-          external_product.save ? Response.success(product) : response_failure(external_product)
+          external_product.save ? add_success(product) : add_failure(external_product)
         end
     end
 
-    def response_failure(record)
+    def add_failure(record)
       id_error_message = "#{record.class}##{record.id}:"
       error_message = [id_error_message, record.errors.full_messages.to_sentence].join(" ")
 
-      Response.failure(error_message)
+      resume << error_message
     end
 
-    def response_success(record)
-      message = "Product '#{record.definicion}' with SKU #{record.sku} was loaded successfully"
+    def add_success(record)
+      message = "#{record.class}##{record.id} loaded successfully"
 
-      Response.success(message)
+      resume << message
     end
   end
 end

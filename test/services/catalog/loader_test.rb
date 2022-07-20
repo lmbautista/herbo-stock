@@ -13,73 +13,53 @@ module Catalog
 
     test "success" do
       shop = create(:shop)
-      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)
+      product = create(:v1_product, shop: shop)
       external_id = 7_734_581_887_222
       expected_shopify_response = Response.success(Shopify::Product.new(id: external_id))
 
       stub_shopify_product(expected_shopify_response)
+      mock_product_loader(product)
 
       assert_difference "Audit.succeeded.count", +1 do
-        assert_difference "V1::Product.count", +1 do
-          with_mocked_fulfillment_service(shop) do
-            response = loader.call
+        with_mocked_fulfillment_service(shop) do
+          response = Loader.new(file_fixture("raw_catalog.csv"), shop.id).call
 
-            assert response.success?
-            assert V1::ProductExternalResource.exists?(external_id: external_id)
-            assert Audit.exists?(message: expected_audit_message)
-          end
+          assert response.success?
+          assert V1::ProductExternalResource.exists?(external_id: external_id)
+          assert Audit.exists?(message: expected_audit_message(product.id))
         end
       end
     end
 
     test "success with filtered product ids" do
       shop = create(:shop)
-      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id, 1004)
 
-      assert_no_difference "Audit.count" do
-        assert_no_difference "V1::Product.count" do
-          response = loader.call
+      Product::Loader.expects(:new).never
 
-          assert response.success?
-          assert_not Audit.exists?(message: expected_audit_message)
-        end
+      assert_difference "Audit.count", +1 do
+        response = Loader.new(file_fixture("raw_catalog.csv"), shop.id, 1004).call
+
+        assert response.success?
+        assert Audit.exists?(message: "")
       end
     end
 
     test "fails due to shopify upsert" do
       shop = create(:shop)
-      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)
+      product = create(:v1_product, shop: shop)
       error_message = :shopify_error
+      expected_message = "Cannot upsert Shopify product: #{error_message}"
 
       expected_shopify_response = Response.failure(error_message)
       stub_shopify_product(expected_shopify_response)
+      mock_product_loader(product)
 
-      assert_difference "Audit.failed.count", +1 do
-        assert_difference "V1::Product.count", +1 do
-          with_mocked_fulfillment_service(shop) do
-            response = loader.call
+      assert_difference "Audit.succeeded.count", +1 do
+        with_mocked_fulfillment_service(shop) do
+          response = Loader.new(file_fixture("raw_catalog.csv"), shop.id).call
 
-            assert response.failure?
-            assert_equal error_message.to_s, response.value
-          end
-        end
-      end
-    end
-
-    test "fails due to raw adapter" do
-      shop = create(:shop)
-      loader = Loader.new(file_fixture("raw_catalog.csv"), shop.id)
-      error_messages = %w(error1 error2)
-      expected_error = "V1::Product#1003: #{error_messages.to_sentence}"
-
-      mock_products_raw_adapter(error_messages)
-
-      assert_difference "Audit.failed.count", +1 do
-        assert_no_difference "V1::Product.count" do
-          response = loader.call
-
-          assert response.failure?
-          assert_equal expected_error, response.value
+          assert response.success?
+          assert_equal expected_message, response.value
         end
       end
     end
@@ -100,8 +80,17 @@ module Catalog
         .returns(response)
     end
 
-    def expected_audit_message
-      "Product 'COPOS DE AVENA 1000GR' with SKU 01003 was loaded successfully"
+    def mock_product_loader(product)
+      response = Response.success("Product created", product)
+
+      product_loader_mock = mock
+      product_loader_mock.expects(:call).returns(response)
+
+      Product::Loader.expects(:new).returns(product_loader_mock)
+    end
+
+    def expected_audit_message(product_id)
+      "V1::Product##{product_id} loaded successfully"
     end
   end
 end
