@@ -12,7 +12,7 @@ class Response
   def and_then
     return self if failure?
 
-    yield(value)
+    yield(value, resource)
   end
 
   def on_failure

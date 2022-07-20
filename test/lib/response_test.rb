@@ -8,7 +8,7 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.new(success: true, value: expected_value)
 
     assert response.success?
-    assert expected_value, response.value
+    assert_equal expected_value, response.value
     assert_nil response.resource
   end
 
@@ -18,8 +18,8 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.new(success: true, value: expected_value, resource: expected_resource)
 
     assert response.success?
-    assert expected_value, response.value
-    assert expected_resource, response.value
+    assert_equal expected_value, response.value
+    assert_equal expected_resource, response.resource
   end
 
   test "should create response with nil value" do
@@ -34,7 +34,7 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.success(expected_value)
 
     assert response.success?
-    assert expected_value, response.value
+    assert_equal expected_value, response.value
   end
 
   test "should create a failure response" do
@@ -42,18 +42,19 @@ class ResponseTest < ActiveSupport::TestCase
     response = Response.failure(expected_value)
 
     assert response.failure?
-    assert expected_value, response.value
+    assert_equal expected_value, response.value
   end
 
-  test "and_then propagate value if response success" do
+  test "and_then propagate value and resource if response success" do
     my_sum = ->(x, y) { Response.success(x + y) }
 
     response = my_sum.call(1, 1)
-      .and_then { |sum_one| Response.success(sum_one + 1) }
-      .and_then { |sum_two| Response.success(sum_two + 1) }
+      .and_then { |sum_one| Response.success(:ok, sum_one + 1) }
+      .and_then { |_message, sum_two| Response.success(:ok, sum_two + 1) }
 
     assert response.success?
-    assert 4, response.value
+    assert_equal :ok, response.value
+    assert_equal 4, response.resource
   end
 
   test "and_then dont propagate value if response failure" do
@@ -64,6 +65,6 @@ class ResponseTest < ActiveSupport::TestCase
       .and_then { |sum_two| Response.success(sum_two + 1) }
 
     assert response.failure?
-    assert 99, response.value
+    assert_equal 99, response.value
   end
 end
