@@ -13,7 +13,7 @@ module Shopify
     def call
       return no_products_response if shop.blank?
 
-      with_audit(operation_id: self.class.to_s, params: params.to_h, shop: shop) do
+      with_audit(operation_id: operation_id, params: params.to_h, shop: shop) do
         products = V1::Product.where(shop: shop)
         products = products.where(sku: sku) if sku.present?
 
@@ -28,6 +28,10 @@ module Shopify
     attr_reader :params,
                 :shop_domain,
                 :sku
+
+    def operation_id
+      "Update Shopify stock"
+    end
 
     def shop
       @shop ||= ::Shop.find_by(shopify_domain: shop_domain)
