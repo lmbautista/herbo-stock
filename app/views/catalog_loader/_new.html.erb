@@ -1,5 +1,5 @@
 <div class="m-2">
-  <h5 class="title-font mb-4" >Sync the products of your store with the provider's catalog</h5>
+  <h5 class="title-font mb-4" >Sync the products of your store with the fulfillment service catalog</h5>
   <div id="catalog_loader_msg" class="mt-2 mb-2"></div>
   <%= form_with model: Catalog::Loader.new("", nil),
                 url: catalog_loader_path,
