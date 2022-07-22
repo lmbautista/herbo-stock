@@ -20,6 +20,7 @@ module Catalog
         filtered_products.each do |row_data|
           load_product(row_data)
             .and_then { |_, product| upsert_shopify_product(product) }
+            .and_then { |product| set_inventory_level_with_response(product) }
         end
 
         Response.success(resume.to_sentence)
@@ -63,12 +64,22 @@ module Catalog
     def upsert_shopify_product(product)
       product.shopify_adapter.to_product.save_with_response
         .on_failure { |error| resume << "Cannot upsert Shopify product: #{error}" }
-        .and_then do |shopify_product|
-          external_product = product.find_or_initialize_external_product
-          external_product.external_id = shopify_product.id
+        .and_then { |shopify_product| save_shopify_product_id(product, shopify_product) }
+    end
 
-          external_product.save ? add_success(product) : add_failure(external_product)
-        end
+    def save_shopify_product_id(product, shopify_product)
+      external_product = product.find_or_initialize_external_product
+      external_product.external_id = shopify_product.id
+
+      external_product.save ? add_success(product) : add_failure(external_product)
+
+      Response.success(product)
+    end
+
+    def set_inventory_level_with_response(product) # rubocop:disable Naming/AccessorMethodName
+      return Response.success(product) if product.external_id.blank?
+
+      product.fulfillment_service.set_inventory_level(product.external_id, product.disponible)
     end
 
     def add_failure(record)

@@ -19,6 +19,7 @@ module Catalog
 
       stub_shopify_product(expected_shopify_response)
       mock_product_loader(product)
+      mock_product_fulfillment_service(external_id, product.disponible, product)
 
       assert_difference "Audit.succeeded.count", +1 do
         with_mocked_fulfillment_service(shop) do
@@ -87,6 +88,16 @@ module Catalog
       product_loader_mock.expects(:call).returns(response)
 
       Product::Loader.expects(:new).returns(product_loader_mock)
+    end
+
+    def mock_product_fulfillment_service(external_id, available, product)
+      fulfillment_service_mock = mock
+      fulfillment_service_mock
+        .expects(:set_inventory_level)
+        .with(external_id, available)
+        .returns(Response.success(product))
+
+      ::V1::Product.any_instance.stubs(:fulfillment_service).returns(fulfillment_service_mock)
     end
 
     def expected_audit_message(product_id)
