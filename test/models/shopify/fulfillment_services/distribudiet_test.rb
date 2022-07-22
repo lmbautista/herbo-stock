@@ -11,8 +11,6 @@ module Shopify
           fulfillment_services = [build_fulfillment_service(session, fulfillment_service_params)]
           mock_get_fulfillment_services(fulfillment_services)
 
-          stub_create_fulfillment_service
-
           fulfillment_service = Distribudiet.new(shop.id)
 
           assert_equal Distribudiet.const_get(:SERVICE_NAME), fulfillment_service.name
@@ -31,7 +29,85 @@ module Shopify
         end
       end
 
+      test "#set_inventory_level success" do
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do |session|
+          available = 35
+          fulfillment_services = [build_fulfillment_service(session, fulfillment_service_params)]
+          product = ShopifyAPI::Product.new(session: session)
+          variant = ShopifyAPI::Variant.new(session: session)
+          variant.inventory_item_id = inventory_item_id
+          product.variants = [variant]
+
+          mock_get_fulfillment_services(fulfillment_services)
+          mock_get_product(session, product)
+          stub_set_inventory_level(available)
+
+          fulfillment_service = Distribudiet.new(shop.id)
+          response = fulfillment_service.set_inventory_level(product_id, available)
+
+          assert response.success?
+          assert_equal "Inventory set successfully", response.value
+        end
+      end
+
+      test "#set_inventory_level fails" do
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do |session|
+          expected_error = "{:code=>422}"
+          available = 35
+          fulfillment_services = [build_fulfillment_service(session, fulfillment_service_params)]
+          product = ShopifyAPI::Product.new(session: session)
+          variant = ShopifyAPI::Variant.new(session: session)
+          variant.inventory_item_id = inventory_item_id
+          product.variants = [variant]
+
+          mock_get_fulfillment_services(fulfillment_services)
+          mock_get_product(session, product)
+
+          ShopifyAPI::InventoryLevel
+            .any_instance
+            .stubs(:set)
+            .raises(ShopifyAPI::Errors::HttpResponseError.new(code: 422))
+
+          fulfillment_service = Distribudiet.new(shop.id)
+          response = fulfillment_service.set_inventory_level(product_id, available)
+
+          assert response.failure?
+          assert_equal expected_error, response.value
+        end
+      end
+
+      test "#set_inventory_level when product has no variant" do
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do |session|
+          available = 35
+          product = ShopifyAPI::Product.new(session: session)
+          product.variants = []
+
+          mock_get_product(session, product)
+
+          fulfillment_service = Distribudiet.new(shop.id)
+          response = fulfillment_service.set_inventory_level(product_id, available)
+
+          assert response.success?
+          assert_equal "Variant not found to set inventory level", response.value
+        end
+      end
+
       private
+
+      def product_id
+        7_730_938_544_374
+      end
+
+      def inventory_item_id
+        5_391_312_655_351
+      end
+
+      def location_id
+        70_191_939_830
+      end
 
       def mock_get_fulfillment_services(fulfillment_services, times = 1)
         ::ShopifyAPI::FulfillmentService
@@ -44,6 +120,25 @@ module Shopify
         stub_request(:post, "https://test.shopify.shop/admin/api/2022-04/fulfillment_services.json")
           .with(body: { fulfillment_service: create_params }.to_json)
           .to_return(status: 200, body: "", headers: {})
+      end
+
+      def stub_set_inventory_level(available)
+        body = {
+          location_id: location_id,
+          inventory_item_id: inventory_item_id,
+          available: available
+        }.to_json
+
+        stub_request(:post, %r{test.shopify.shop/admin/api/2022-04/inventory_levels/set.json})
+          .with(body: body)
+          .to_return(status: 200, body: "", headers: {})
+      end
+
+      def mock_get_product(session, product)
+        ::ShopifyAPI::Product
+          .expects(:find)
+          .with(session: session, id: product_id)
+          .returns(product)
       end
 
       def create_params
@@ -65,7 +160,7 @@ module Shopify
           "handle" => "distribudiet-fulfillment",
           "id" => 61_749_559_542,
           "inventory_management" => true,
-          "location_id" => 70_191_939_830,
+          "location_id" => location_id,
           "name" => "Distribudiet Fulfillment",
           "provider_id" => nil,
           "tracking_support" => false,

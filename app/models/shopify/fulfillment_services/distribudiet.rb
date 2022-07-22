@@ -9,6 +9,23 @@ module Shopify
         @shop_id = shop_id
       end
 
+      def set_inventory_level(product_id, available)
+        product = ShopifyAPI::Product.find(session: session, id: product_id)
+        variant = product.variants.first
+        return Response.success("Variant not found to set inventory level") if variant.nil?
+
+        body = {
+          "location_id" => location_id,
+          "inventory_item_id" => product.variants.first.inventory_item_id,
+          "available" => available
+        }
+        inventory_level = ShopifyAPI::InventoryLevel.new(session: session)
+        inventory_level.set(session: session, body: body)
+        Response.success("Inventory set successfully")
+      rescue ShopifyAPI::Errors::HttpResponseError => e
+        Response.failure(e.message)
+      end
+
       private
 
       attr_reader :shop_id
