@@ -320,6 +320,13 @@ module V1
       assert_kind_of V1::Products::Shopify::Adapter, product.shopify_adapter
     end
 
+    test "#fulfillment_service" do
+      product = build(:v1_product)
+      product.shopify_adapter.expects(:fulfillment_service).returns(mock)
+
+      assert product.fulfillment_service
+    end
+
     test "#find_or_initialize_external_product return persisted record" do
       product = create(:v1_product)
       create(:v1_product_external_resource, product: product)
@@ -337,6 +344,13 @@ module V1
 
       assert_not external_product.persisted?
       assert external_product.external_id.blank?
+    end
+
+    test "#external_id" do
+      product = create(:v1_product)
+      create(:v1_product_external_resource, product: product)
+
+      assert product.external_id
     end
   end
 end

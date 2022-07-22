@@ -45,9 +45,13 @@ module V1
       @shopify_adapter ||= V1::Products::Shopify::Adapter.new(self)
     end
 
+    delegate :fulfillment_service, to: :shopify_adapter
+
     def find_or_initialize_external_product
       product_external_resources
         .find_or_initialize_by(kind: ProductExternalResource::KIND_SHOPIFY_PRODUCT)
     end
+
+    delegate :external_id, to: :find_or_initialize_external_product
   end
 end
