@@ -21,13 +21,17 @@ module Shopify
 
     test "update success" do
       shop = create(:shop)
-      stub_update_request(shop)
 
-      product = Product.new(shop_id: shop.id, **update_attributes)
-      response = product.save_with_response
+      with_offline_shopify_session(shop) do |session|
+        stub_get_product(session)
+        stub_update_request(shop)
 
-      assert response.success?
-      assert_kind_of Product, response.value
+        product = Product.new(shop_id: shop.id, **update_attributes)
+        response = product.save_with_response
+
+        assert response.success?
+        assert_kind_of Product, response.value
+      end
     end
 
     private
@@ -51,6 +55,23 @@ module Shopify
 
     def product_id
       7_730_938_544_374
+    end
+
+    def variant_id
+      12_345
+    end
+
+    def stub_get_product(session)
+      product = ShopifyAPI::Product.new(session: session)
+      variant = ShopifyAPI::Variant.new(session: session)
+      product.id = product_id
+      variant.id = variant_id
+      product.variants = [variant]
+
+      ::ShopifyAPI::Product
+        .expects(:find)
+        .with(session: session, id: product_id)
+        .returns(product)
     end
 
     def stub_update_request(shop)
@@ -107,6 +128,7 @@ module Shopify
         ],
         "variants" => [
           {
+            "id" => nil,
             "price" => "15.3",
             "sku" => nil,
             "barcode" => nil,
@@ -116,6 +138,7 @@ module Shopify
             "fulfillment_service" => nil,
             "inventory_policy" => nil,
             "inventory_quantity" => nil,
+            "inventory_item_id" => nil,
             "inventory_management" => nil,
             "requires_shipping" => nil
           }
@@ -125,7 +148,6 @@ module Shopify
 
     def update_params
       {
-        "id" => "7730938544374",
         "title" => "Burton Custom Freestyle 151 EDITED",
         "body_html" => "<h1>Body</h1>",
         "vendor" => "Burton",
@@ -142,6 +164,7 @@ module Shopify
         ],
         "variants" => [
           {
+            "id" => variant_id.to_s,
             "price" => "15.3",
             "sku" => nil,
             "barcode" => nil,
@@ -152,6 +175,7 @@ module Shopify
             "inventory_policy" => nil,
             "inventory_quantity" => nil,
             "inventory_management" => nil,
+            "inventory_item_id" => nil,
             "requires_shipping" => nil
           }
         ]

@@ -40,12 +40,26 @@ module Shopify
     end
 
     def update
-      product_id = attributes.delete(:id)
+      product_id = update_attributes.delete(:id)
       path = "products/#{product_id}.json"
-      request_attributes = attributes.except(:shop_id)
+      request_attributes = update_attributes.except(:shop_id)
       url, headers, params = prepare_request(shop_id, path, request_attributes)
 
       with_response_handler(200) { RestClient.put(url, params, headers) }
+    end
+
+    def update_attributes # rubocop:disable Metrics/AbcSize
+      return @update_attributes if defined?(@update_attributes)
+      return attributes if id.blank?
+
+      session = ShopifyAPI::Utils::SessionUtils
+        .load_offline_session(shop: ::Shop.find(shop_id).shopify_domain)
+      shopify_product_attrs = ::ShopifyAPI::Product.find(session: session, id: id)
+        .as_json.deep_symbolize_keys
+
+      @update_attributes = attributes.dup.tap do |attrs|
+        attrs[:variants][0][:id] = shopify_product_attrs[:variants][0][:id]
+      end
     end
   end
 end
