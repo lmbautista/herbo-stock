@@ -6,12 +6,13 @@ ShopifyApp.configure do |config|
   config.webhook_jobs_namespace = WEBHOOK_NAMESPACE
   config.webhooks = [
     { topic: "app/uninstalled", address: "#{WEBHOOK_NAMESPACE}/app_uninstalled" },
-    { topic: "products/update", address: "#{WEBHOOK_NAMESPACE}/product_updated" }
+    { topic: "products/update", address: "#{WEBHOOK_NAMESPACE}/product_updated" },
+    { topic: "fulfillments/create", address: "#{WEBHOOK_NAMESPACE}/fulfillment_created" }
   ]
   config.application_name = "HerboStock"
   config.old_secret = ""
   config.scope = "write_products,write_customers,write_draft_orders,read_fulfillments," \
-                 "write_fulfillments"
+                 "write_fulfillments,read_orders,write_orders"
   # Consult this page for more scope options:
   # https://help.shopify.com/en/api/getting-started/authentication/oauth/scopes
   config.embedded_app = true

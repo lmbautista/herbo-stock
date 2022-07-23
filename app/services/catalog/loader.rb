@@ -40,7 +40,7 @@ module Catalog
 
     def filtered_products
       data = CSV.read(input_path, **csv_options)
-      return data if product_ids.blank?
+      return data.take(2) if product_ids.blank?
 
       data.select { product_ids.include?(_1["id"].to_s) }
     end
