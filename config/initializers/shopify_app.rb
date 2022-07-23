@@ -11,7 +11,7 @@ ShopifyApp.configure do |config|
   config.application_name = "HerboStock"
   config.old_secret = ""
   config.scope = "write_products,write_customers,write_draft_orders,read_fulfillments," \
-                 "write_fulfillments,read_orders,write_orders"
+                 "write_fulfillments,read_orders,write_inventory"
   # Consult this page for more scope options:
   # https://help.shopify.com/en/api/getting-started/authentication/oauth/scopes
   config.embedded_app = true
