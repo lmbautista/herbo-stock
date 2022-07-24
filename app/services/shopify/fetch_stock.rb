@@ -38,7 +38,7 @@ module Shopify
     end
 
     def response_success(products)
-      message = "Stock for products with SKU #{products.pluck(:sku).to_sentence} will be updated "\
+      message = "Stock for products with SKU #{products.pluck(:sku).to_sentence} will be updated " \
                 "in Shopify"
       resource = products.pluck(:sku, :disponible).to_h
 

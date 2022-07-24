@@ -15,7 +15,7 @@ module Shopify
           CatalogLoaderJob.perform_later(**job_params)
 
           order_url = "http://#{shop.shopify_domain}/admin/orders/#{order_id}"
-          message = "<a href=\"#{order_url}\" target=\"_blank\">Order</a> was prepared. "\
+          message = "<a href=\"#{order_url}\" target=\"_blank\">Order</a> was prepared. " \
                     "Products with SKU #{products_sku.to_sentence} will be updated"
           Response.success(message)
         end
