@@ -30,7 +30,7 @@ module Shopify
                 :sku
 
     def operation_id
-      "Update Shopify stock"
+      "Fetch products stock"
     end
 
     def shop
@@ -38,7 +38,8 @@ module Shopify
     end
 
     def response_success(products)
-      message = "Products with SKU #{products.pluck(:sku).to_sentence} found"
+      message = "Stock for products with SKU #{products.pluck(:sku).to_sentence} will be updated "\
+                "in Shopify"
       resource = products.pluck(:sku, :disponible).to_h
 
       Response.success(message, resource)

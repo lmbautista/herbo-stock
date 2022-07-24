@@ -42,7 +42,7 @@ module Shopify
     test "fetch stock when product exists by sku" do
       shop = create(:shop)
       product = create(:v1_product, sku: 1234, shop: shop)
-      expected_value = "Products with SKU #{product.sku} found"
+      expected_value = "Stock for products with SKU #{product.sku} will be updated in Shopify"
       expected_resource = { product.sku => product.disponible }
 
       response = FetchStock.new(shop: shop.shopify_domain, sku: product.sku).call
@@ -56,8 +56,10 @@ module Shopify
       shop = create(:shop)
       product_one = create(:v1_product, id: 1, sku: 1234, shop: shop)
       product_two = create(:v1_product, id: 2, sku: 1235, shop: shop)
-      expected_value = "Products with SKU #{[product_one, product_two].map(&:sku).to_sentence} " \
-                       "found"
+
+      expected_value = "Stock for products with SKU " \
+                       "#{[product_one, product_two].map(&:sku).to_sentence} will be updated " \
+                       "in Shopify"
       expected_resource = {
         product_one.sku => product_one.disponible,
         product_two.sku => product_two.disponible
