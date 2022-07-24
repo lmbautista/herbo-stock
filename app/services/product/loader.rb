@@ -10,7 +10,7 @@ module Product
     end
 
     def call
-      with_audit(operation_id: operation_id, params: data, shop: Shop.find(shop_id)) do
+      with_audit(operation_id: operation_id, params: data, shop: shop) do
         adapter = ::V1::Products::RawAdapter.new(data, shop_id)
         product = adapter.find_or_build_v1_product
         @action = product.persisted? ? "updated" : "created"
@@ -23,6 +23,10 @@ module Product
     private
 
     attr_reader :data, :shop_id, :action
+
+    def shop
+      @shop ||= Shop.find(shop_id)
+    end
 
     def operation_id
       "Load product"
@@ -40,7 +44,9 @@ module Product
     end
 
     def response_success(record)
-      message = "Product '#{record.definicion}' with SKU #{record.sku} was #{action} successfully"
+      product_url = "http://#{shop.shopify_domain}/admin/products/#{record.external_id}"
+      message = "<a href=\"#{product_url}\" target=\"_blank\">Product</a> '#{record.definicion}' " \
+                "with SKU #{record.sku} was #{action} successfully"
 
       Response.success(message, record)
     end

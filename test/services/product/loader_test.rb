@@ -9,7 +9,9 @@ module Product
     end
 
     test "create successfully" do
-      expected_message = "Product 'COPOS DE AVENA 1000GR' with SKU 01003 was created successfully"
+      expected_message =
+        "<a href=\"http://test.shopify.shop/admin/products/\" target=\"_blank\">Product</a> " \
+        "'COPOS DE AVENA 1000GR' with SKU 01003 was created successfully"
 
       assert_difference "V1::Product.count", +1 do
         assert_difference "Audit.succeeded.count", +1 do
@@ -24,7 +26,9 @@ module Product
 
     test "update successfully" do
       product = create(:v1_product, id: 1003, shop: shop)
-      expected_message = "Product 'COPOS DE AVENA 1000GR' with SKU 01003 was updated successfully"
+      expected_message =
+        "<a href=\"http://test.shopify.shop/admin/products/\" target=\"_blank\">Product</a> " \
+        "'COPOS DE AVENA 1000GR' with SKU 01003 was updated successfully"
 
       assert_no_difference "V1::Product.count" do
         assert_difference "Audit.succeeded.count", +1 do
