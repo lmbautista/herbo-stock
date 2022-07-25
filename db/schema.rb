@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_05_151320) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_25_133603) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -23,6 +23,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_05_151320) do
     t.text "message"
     t.string "shop_domain", null: false
     t.index ["shop_domain"], name: "index_audits_on_shop_domain"
+  end
+
+  create_table "catalog_loader_schedulers", force: :cascade do |t|
+    t.integer "shop_id", null: false
+    t.string "time_unit", null: false
+    t.integer "time_amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shop_id"], name: "index_catalog_loader_schedulers_on_shop_id"
   end
 
   create_table "shops", force: :cascade do |t|
@@ -92,6 +101,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_05_151320) do
     t.index ["shop_domain"], name: "index_v1_webhooks_on_shop_domain"
   end
 
+  add_foreign_key "catalog_loader_schedulers", "shops"
   add_foreign_key "v1_product_external_resources", "v1_products"
   add_foreign_key "v1_products", "shops"
 end
