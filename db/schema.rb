@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_25_133603) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_27_062203) do
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -31,6 +31,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_25_133603) do
     t.integer "time_amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "next_scheduled_at"
     t.index ["shop_id"], name: "index_catalog_loader_schedulers_on_shop_id"
   end
 
