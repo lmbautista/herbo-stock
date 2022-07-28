@@ -25,4 +25,11 @@ class CatalogLoaderScheduler < ApplicationRecord
 
     save
   end
+
+  def repeat
+    delay = time_amount.to_i.send(time_unit)
+    self.next_scheduled_at = Time.current + delay
+
+    save
+  end
 end
