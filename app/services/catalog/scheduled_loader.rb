@@ -61,10 +61,10 @@ module Catalog
 
     def perform_later_catalog_loader_job(process_id)
       CatalogLoaderJob.perform_later(
-        shop_domain: shop_domain,
         repeat: true,
         repeat_at: scheduler.next_scheduled_at,
-        process_id: process_id
+        process_id: process_id,
+        shop_domain: shop_domain
       )
 
       Response.success(process_id)
