@@ -52,11 +52,11 @@ class CatalogLoaderSchedulerTest < ActiveSupport::TestCase
   end
 
   test "#repeat" do
-    first_scheduled_at = Time.current.yesterday
-    scheduler = create(:catalog_loader_scheduler,
-                       next_scheduled_at: first_scheduled_at, process_id: "abc123")
-
     freeze_time do
+      first_scheduled_at = Time.current.yesterday
+      scheduler = create(:catalog_loader_scheduler,
+                         next_scheduled_at: first_scheduled_at, process_id: "abc123")
+
       expected_next_scheduled_at = 1.minute.from_now
       assert_changes -> { scheduler.reload.next_scheduled_at },
                      from: first_scheduled_at,
