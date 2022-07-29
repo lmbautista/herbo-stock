@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   get "/products", to: "products#index"
   get "/webhooks", to: "webhooks#index"
   post "/catalog_loader", to: "catalog_loader#create"
+  post "/catalog_loader_scheduler", to: "catalog_loader_scheduler#create"
+  get "/catalog_loader_scheduler", to: "catalog_loader_scheduler#new"
 
   namespace :shopify do
     namespace :webhooks do

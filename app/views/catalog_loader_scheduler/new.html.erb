@@ -1,0 +1,39 @@
+<div class="card mb-3">
+  <div class="card-body pb-4">
+    <div class="d-flex flex-row bd-highlight align-items-center">
+      <div class="bd-highlight"><%= image_tag "schedule-icon.png", size: 60 %></div>
+      <div class="bd-highlight">
+        <h3 class="title-font m-0">Catalog load scheduler</h3>
+        <h5 class="title-font secondary-font-color m-0" >Schedule periodically the catalog loader process</h5>
+      </div>
+    </div>
+    <hr/>
+    <div class="container-xxl pt-4">
+      <div id="catalog_loader_scheduler_msg" class="mt-2 mb-2"></div>
+      <%= render partial: "show", locals: { catalog_loader_scheduler: @catalog_loader_scheduler } %>
+      <%= form_with model: CatalogLoaderScheduler.new,
+                    url: catalog_loader_scheduler_path,
+                    id: "new_catalog_loader_scheduler" do |form| %>
+        <div class="form-group">
+          <div class="row align-items-center">
+            <div class="col-6">
+              <%= form.text_field :time_amount, placeholder: "Duration", class: "form-control" %>
+            </div>
+            <div class="col-6">
+              <%= form.select :time_unit, CatalogLoaderScheduler::TIME_UNITS.map { [_1.humanize, _1] },
+                              { prompt: "Please select one option" },
+                              { class: "form-control" } %>
+            </div>
+          </div>
+          <small id="duration" class="form-text text-muted">
+            This will schedule the catalog load that will be repited with certain frequency.
+            The previous scheduler will be removed.
+          </small>
+        </div>
+        <div class="d-flex flex-row justify-content-end bd-highlight pt-1">
+          <%= form.submit "Schedule", data: { confirm: "Are you sure?" }, class: "btn btn-primary border border-dark m-1" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

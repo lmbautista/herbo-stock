@@ -5,5 +5,10 @@ FactoryBot.define do
     shop { create(:shop) }
     time_unit { CatalogLoaderScheduler::TIME_UNIT_MINUTES }
     time_amount { 1 }
+
+    trait :scheduled do
+      next_scheduled_at { Time.current }
+      process_id { SecureRandom.hex(12) }
+    end
   end
 end
