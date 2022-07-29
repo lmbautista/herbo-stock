@@ -116,6 +116,19 @@
             });
         };
 
+        var stopCatalogLoaderSchedulerPooling = function() {
+          if (window.schedulerPollingId !== undefined) {
+            clearInterval(window.schedulerPollingId);
+            window.schedulerPollingId = undefined;
+          };
+        };
+
+        var startCatalogLoaderSchedulerPooling = function() {
+          window.schedulerPollingId = setInterval(() => {
+            getCatalogLoaderScheduler();
+          }, 60000);
+        }
+
         var postCatalogLoader = function(url) {
           var headers = new Headers({
             "Authorization": "Bearer " + window.sessionToken,
@@ -144,19 +157,65 @@
           });
         };
 
+        var getCatalogLoaderScheduler = function() {
+          var headers = new Headers({
+            "Authorization": "Bearer " + window.sessionToken,
+            "Content-Type": "application/json"
+          });
+          var url = "/catalog_loader_scheduler";
+          return fetch(url, { method: 'GET', headers })
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById("catalog_loader_scheduler").innerHTML = data;
+              bindCatalogLoaderSchedulerSubmit();
+            });
+        };
+
+        var bindCatalogLoaderSchedulerSubmit = function() {
+          $("#new_catalog_loader_scheduler").on("submit", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var url = "/catalog_loader_scheduler?" + $(this).serialize();
+
+            postCatalogLoaderScheduler(url, window.sessionToken);
+            stopAuditsPooling();
+            startAuditsPooling();
+          });
+        };
+
+        var getCatalogLoaderSchedulerPromise = new Promise(getCatalogLoaderScheduler, function() {});
+
+        var postCatalogLoaderScheduler = function(url) {
+          var headers = new Headers({
+            "Authorization": "Bearer " + window.sessionToken,
+            "Content-Type": "application/json"
+          });
+          return fetch(url, { method: 'POST', headers })
+            .then(response => response.text())
+            .then(data => { getCatalogLoaderSchedulerPromise; })
+            .then( _ => {
+              HTMLsuccessfulMessage = "<%= j render(partial: 'catalog_loader_scheduler/success') %>"
+              document.getElementById("catalog_loader_scheduler_msg").innerHTML = HTMLsuccessfulMessage;
+              setTimeout(() => {
+                document.getElementById("catalog_loader_scheduler_msg").innerHTML = "";
+              }, 5000);
+            });
+        };
 
         fetchAudits();
         startAuditsPooling();
         bindAuditsFilterSubmit();
         fetchWebhooks();
         bindCatalogLoaderSubmit();
+        getCatalogLoaderScheduler();
+        startCatalogLoaderSchedulerPooling();
       }, { once: true });
     </script>
   </head>
   <body>
     <div class="container-fluid">
-      <div class="m-3 p-3 main-card">
-        <div class="d-flex flex-row bd-highlight mb-1 align-items-center">
+      <div class="m-1 p-1 main-card">
+        <div class="d-flex flex-row bd-highlight p-3 align-items-center justify-content-center">
           <div class="p-2 bd-highlight"><%= image_tag "logo.png", size: 90 %></div>
           <div class="p-2 bd-highlight">
             <h1 class="title-font m-0">HerboMadrid</h1>
@@ -166,27 +225,40 @@
 
         <%= render partial: "catalog_loader/new" %>
 
-        <hr/>
+        <div id="catalog_loader_scheduler">
+          <div class="card mb-3">
+            <div class="card-body pb-4">
+              <div class="d-flex flex-row justify-content-center bd-highlight pt-3 pb-3 align-items-center">
+                <div class="bd-highlight text-center">
+                  <%= image_tag "loading.gif", size: 60 %>
+                  <h6 class="title-font m-0">loading</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="card mb-3">
-          <div class="card-body">
-            <div class="d-flex flex-row bd-highlight pb-3">
+          <div class="card-body pb-4">
+            <div class="d-flex flex-row bd-highlight">
               <div class="bd-highlight"><%= image_tag "log-icon.png", size: 60 %></div>
               <div class="bd-highlight">
                 <h3 class="title-font m-0">Audit</h3>
                 <h5 class="title-font secondary-font-color m-0">
-                  Check log of latest actions done by the sync manager
+                  Check all the actions done by the application
                 </h5>
               </div>
             </div>
-            <div class="d-flex flex-column bd-highlight pt-3 pb-3">
-              <div class="bd-highlight">
-                <%= render partial: "audits/filter" %>
-                <hr/>
-              </div>
-              <div class="bd-highlight text-center" id="audits">
-                <%= image_tag "loading.gif", size: 60 %>
-                <h6 class="title-font m-0">loading</h6>
+            <hr/>
+            <div class="container-xxl pt-4">
+              <div class="d-flex flex-column bd-highlight">
+                <div class="bd-highlight">
+                  <%= render partial: "audits/filter" %>
+                </div>
+                <div class="bd-highlight text-center" id="audits">
+                  <%= image_tag "loading.gif", size: 60 %>
+                  <h6 class="title-font m-0">loading</h6>
+                </div>
               </div>
             </div>
           </div>
@@ -194,7 +266,7 @@
 
         <div id="webhooks">
           <div class="card mb-3">
-            <div class="card-body">
+            <div class="card-body pb-4">
               <div class="d-flex flex-row justify-content-center bd-highlight pt-3 pb-3 align-items-center">
                 <div class="bd-highlight text-center">
                   <%= image_tag "loading.gif", size: 60 %>

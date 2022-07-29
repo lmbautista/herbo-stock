@@ -1,15 +1,19 @@
-<div class="m-2 mt-0">
-  <h5 class="title-font mb-1">Filter</h5>
+<div class="border bg-light p-3">
   <%= form_with url: audits_path, method: :get, id: "audits_filter" do |form| %>
-    <div class="form-group">
-      <%= label :audit, :status, "Status" %>
-      <%= form.select :status, Audit::STATUSES.map { [_1.humanize, _1] },
-                      { prompt: "Select a status" },
-                      { class: "form-control" } %>
+    <div class="row">
+      <div class="col-3">
+        <div class="form-group">
+          <%= label :audit, :status, "Status" %>
+          <%= form.select :status, Audit::STATUSES.map { [_1.humanize, _1] },
+                          { prompt: "Select a status" },
+                          { class: "form-control" } %>
 
+        </div>
+      </div>
     </div>
-    <br/>
-    <%= form.submit "Search", class: "btn btn-primary border border-dark" %>
-    <%= link_to "Clear", "", class: "btn btn-default border border-dark", onclick: "clearAuditsFilter()" %>
+    <div class="d-flex flex-row justify-content-end bd-highlight pt-1">
+      <%= form.submit "Search", class: "btn btn-primary border border-dark m-1" %>
+      <%= link_to "Clear", "", class: "btn btn-default border border-dark m-1", onclick: "clearAuditsFilter()" %>
+    </div>
   <% end %>
 </div>
