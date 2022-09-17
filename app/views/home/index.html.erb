@@ -97,25 +97,6 @@
             });
         };
 
-        var bindWebhooksPagination = function() {
-          $("#webhooks .pagination-link").click(function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var url = $(this).attr("href");
-            fetchWebhooks(url);
-          });
-        };
-
-        var fetchWebhooks = function(url = "/webhooks") {
-          var headers = new Headers({ "Authorization": "Bearer " + window.sessionToken });
-          return fetch(url, { headers })
-            .then(response => response.text())
-            .then(data => {
-              document.getElementById("webhooks").innerHTML = data;
-              bindWebhooksPagination();
-            });
-        };
-
         var stopCatalogLoaderSchedulerPooling = function() {
           if (window.schedulerPollingId !== undefined) {
             clearInterval(window.schedulerPollingId);
@@ -205,7 +186,6 @@
         fetchAudits();
         startAuditsPooling();
         bindAuditsFilterSubmit();
-        fetchWebhooks();
         bindCatalogLoaderSubmit();
         getCatalogLoaderScheduler();
         startCatalogLoaderSchedulerPooling();
@@ -213,7 +193,7 @@
     </script>
   </head>
   <body>
-    <div class="container-fluid">
+    <div class="container-lg">
       <div class="m-1 p-1 main-card">
         <div class="d-flex flex-row bd-highlight p-3 align-items-center justify-content-center">
           <div class="p-2 bd-highlight"><%= image_tag "logo.png", size: 90 %></div>
@@ -256,19 +236,6 @@
                   <%= render partial: "audits/filter" %>
                 </div>
                 <div class="bd-highlight text-center" id="audits">
-                  <%= image_tag "loading.gif", size: 60 %>
-                  <h6 class="title-font m-0">loading</h6>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="webhooks">
-          <div class="card mb-3">
-            <div class="card-body pb-4">
-              <div class="d-flex flex-row justify-content-center bd-highlight pt-3 pb-3 align-items-center">
-                <div class="bd-highlight text-center">
                   <%= image_tag "loading.gif", size: 60 %>
                   <h6 class="title-font m-0">loading</h6>
                 </div>

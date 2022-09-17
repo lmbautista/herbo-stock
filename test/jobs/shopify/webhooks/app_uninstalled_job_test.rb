@@ -31,13 +31,11 @@ module Shopify
         }
         expected_message = "App was uninstalled successfully from shop #{shop.shopify_domain}"
 
-        assert_difference "V1::Webhook.succeeded.count", +1 do
-          assert_difference "::Shop.count", -1 do
-            response = AppUninstalledJob.new.perform(**job_params)
+        assert_difference "::Shop.count", -1 do
+          response = AppUninstalledJob.new.perform(**job_params)
 
-            assert response.success?
-            assert_equal expected_message, response.value
-          end
+          assert response.success?
+          assert_equal expected_message, response.value
         end
       end
 
@@ -56,13 +54,11 @@ module Shopify
         ::Shop.any_instance.stubs(:destroy).returns(false)
         ::Shop.any_instance.stubs(:errors).returns(ar_errors)
 
-        assert_difference "V1::Webhook.failed.count", +1 do
-          assert_no_difference "::Shop.count" do
-            response = AppUninstalledJob.new.perform(**job_params)
+        assert_no_difference "::Shop.count" do
+          response = AppUninstalledJob.new.perform(**job_params)
 
-            assert response.failure?
-            assert_equal expected_message, response.value
-          end
+          assert response.failure?
+          assert_equal expected_message, response.value
         end
       end
 
