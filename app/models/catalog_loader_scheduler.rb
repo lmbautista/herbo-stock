@@ -6,7 +6,7 @@ class CatalogLoaderScheduler < ApplicationRecord
   TIME_UNITS = [
     TIME_UNIT_MINUTES = "minutes",
     TIME_UNIT_HOURS = "hours",
-    TIME_UNIT_DAYS = "DAYS"
+    TIME_UNIT_DAYS = "days"
   ].freeze
 
   enum time_unit: { minutes: TIME_UNIT_MINUTES, hours: TIME_UNIT_HOURS, days: TIME_UNIT_DAYS }
