@@ -95,6 +95,54 @@ module Shopify
         end
       end
 
+      test "#username" do
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do
+          fulfillment_service = Distribudiet.new(shop.id)
+
+          assert fulfillment_service.username
+        end
+      end
+
+      test "#password" do
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do
+          fulfillment_service = Distribudiet.new(shop.id)
+
+          assert fulfillment_service.password
+        end
+      end
+
+      test "#get_url_for_source for all_products" do
+        expected_url = %r{https://herbomadrid:.+@distribudiet.net/catalogo/archivos/PRESTA_C_lB6W_2_art_total.csv}
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do
+          fulfillment_service = Distribudiet.new(shop.id)
+
+          assert_match expected_url, fulfillment_service.get_url_for_source("all_products")
+        end
+      end
+
+      test "#get_url_for_source for stock_and_prices" do
+        expected_url = %r{https://herbomadrid:.+@distribudiet.net/catalogo/archivos/PRESTA_C_5Yep7Q_stock.csv}
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do
+          fulfillment_service = Distribudiet.new(shop.id)
+
+          assert_match expected_url, fulfillment_service.get_url_for_source("stock_and_prices")
+        end
+      end
+
+      test "#get_url_for_source for archived_products" do
+        expected_url = %r{https://herbomadrid:.+@distribudiet.net/catalogo/archivos/PRESTA_art_baja.csv}
+        shop = create(:shop)
+        with_offline_shopify_session(shop) do
+          fulfillment_service = Distribudiet.new(shop.id)
+
+          assert_match expected_url, fulfillment_service.get_url_for_source("archived_products")
+        end
+      end
+
       private
 
       def product_id

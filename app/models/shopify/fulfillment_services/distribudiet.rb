@@ -26,6 +26,27 @@ module Shopify
         Response.failure(e.message)
       end
 
+      def username
+        Rails.application.credentials.dig(:distribudiet, :username)
+      end
+
+      def password
+        Rails.application.credentials.dig(:distribudiet, :password)
+      end
+
+      SOURCES = {
+        all_products: "https://user:password@distribudiet.net/catalogo/archivos/PRESTA_C_lB6W_2_art_total.csv",
+        stock_and_prices: "https://user:password@distribudiet.net/catalogo/archivos/PRESTA_C_5Yep7Q_stock.csv",
+        archived_products: "https://user:password@distribudiet.net/catalogo/archivos/PRESTA_art_baja.csv"
+      }.freeze
+
+      private_constant :SOURCES
+
+      def get_url_for_source(source_name)
+        source = SOURCES.fetch(source_name.to_sym)
+        source.gsub("user", username).gsub("password", password)
+      end
+
       private
 
       attr_reader :shop_id

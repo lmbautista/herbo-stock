@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
       SHOPIFY_API_KEY: 12345
       SHOPIFY_API_SECRET: 12345
       SHOP: herbomadrid-test.myshopify.com
