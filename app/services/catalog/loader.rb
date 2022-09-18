@@ -4,8 +4,7 @@ module Catalog
   class Loader
     include WithAudit
 
-    def initialize(input_path, shop_id, product_ids = [])
-      @input_path = input_path
+    def initialize(shop_id, product_ids = [])
       @shop_id = shop_id
       @product_ids = Array.wrap(product_ids).select(&:present?).map(&:to_s)
       @resume = []
@@ -17,19 +16,20 @@ module Catalog
 
     def call
       with_audit(operation_id: operation_id, params: params, shop: Shop.find(shop_id)) do
-        filtered_products.each do |row_data|
-          load_product(row_data)
-            .and_then { |_, product| upsert_shopify_product(product) }
-            .and_then { |product| set_inventory_level_with_response(product) }
-        end
-
-        Response.success(resume.to_sentence)
+        load_fulfillment_service_products
+          .and_then { load_products }
+          .and_then { Response.success(resume.to_sentence) }
       end
     end
 
     private
 
-    attr_reader :resume, :input_path, :shop_id, :product_ids
+    attr_reader :resume, :shop_id, :product_ids, :csv_data
+
+    def fulfillment_service
+      @fulfillment_service ||=
+        ::Shopify::FulfillmentServices::Distribudiet.new(shop_id)
+    end
 
     def params
       {
@@ -38,15 +38,38 @@ module Catalog
       }
     end
 
+    def load_fulfillment_service_products
+      url = fulfillment_service.get_url_for_source("all_products")
+      response = RestClient.get(url)
+
+      return Response.failure("Fulfillment service unavailable") if response.code != 200
+
+      raw_content = response.body
+      @csv_data = StringIO.new(raw_content)
+      csv_data.set_encoding_by_bom
+
+      Response.success("Ok")
+    end
+
+    def load_products
+      filtered_products.each do |row_data|
+        load_product(row_data)
+          .and_then { |_, product| upsert_shopify_product(product) }
+          .and_then { |product| set_inventory_level_with_response(product) }
+      end
+
+      Response.success("Ok")
+    end
+
     def filtered_products
-      data = CSV.read(input_path, **csv_options)
+      data = CSV.parse(csv_data, **csv_options)
       return data if product_ids.blank?
 
       data.select { product_ids.include?(_1["id"].to_s) }
     end
 
     def csv_options
-      { headers: true, col_sep: ";", encoding: "bom|utf-8" }
+      { headers: true, col_sep: ";" }
     end
 
     def shop
@@ -80,6 +103,10 @@ module Catalog
       return Response.success(product) if product.external_id.blank?
 
       product.fulfillment_service.set_inventory_level(product.external_id, product.disponible)
+    end
+
+    def resource_not_reach_response
+      Response.failure("The fulfillment service source is unavailable")
     end
 
     def add_failure(record)

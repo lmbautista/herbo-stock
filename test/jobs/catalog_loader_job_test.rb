@@ -17,7 +17,7 @@ class CatalogLoaderJobTest < ActiveJob::TestCase
 
     Catalog::Loader
       .expects(:new)
-      .with(CatalogLoaderJob::LOCAL_PATH, shop.id, product_ids)
+      .with(shop.id, product_ids)
       .returns(loader_mock)
 
     CatalogLoaderJob.new.perform(**job_params)
@@ -46,7 +46,7 @@ class CatalogLoaderJobTest < ActiveJob::TestCase
 
     Catalog::Loader
       .expects(:new)
-      .with(CatalogLoaderJob::LOCAL_PATH, shop.id, product_ids)
+      .with(shop.id, product_ids)
       .returns(loader_mock)
 
     assert_enqueued_with job: ::CatalogLoaderJob,
@@ -83,7 +83,7 @@ class CatalogLoaderJobTest < ActiveJob::TestCase
 
     Catalog::Loader
       .expects(:new)
-      .with(CatalogLoaderJob::LOCAL_PATH, shop.id, product_ids)
+      .with(shop.id, product_ids)
       .returns(loader_mock)
 
     assert_no_enqueued_jobs only: ::CatalogLoaderJob do

@@ -20,10 +20,11 @@ module Catalog
       stub_shopify_product(expected_shopify_response)
       mock_product_loader(product)
       mock_product_fulfillment_service(external_id, product.disponible, product)
+      stub_fulfillment_service_catalog_request
 
       assert_difference "Audit.succeeded.count", +1 do
         with_mocked_fulfillment_service(shop) do
-          response = Loader.new(file_fixture("raw_catalog.csv"), shop.id).call
+          response = Loader.new(shop.id).call
 
           assert response.success?
           assert V1::ProductExternalResource.exists?(external_id: external_id)
@@ -37,8 +38,10 @@ module Catalog
 
       Product::Loader.expects(:new).never
 
+      stub_fulfillment_service_catalog_request
+
       assert_difference "Audit.count", +1 do
-        response = Loader.new(file_fixture("raw_catalog.csv"), shop.id, 1004).call
+        response = Loader.new(shop.id, 1004).call
 
         assert response.success?
         assert Audit.exists?(message: "")
@@ -54,10 +57,11 @@ module Catalog
       expected_shopify_response = Response.failure(error_message)
       stub_shopify_product(expected_shopify_response)
       mock_product_loader(product)
+      stub_fulfillment_service_catalog_request
 
       assert_difference "Audit.succeeded.count", +1 do
         with_mocked_fulfillment_service(shop) do
-          response = Loader.new(file_fixture("raw_catalog.csv"), shop.id).call
+          response = Loader.new(shop.id).call
 
           assert response.success?
           assert_equal expected_message, response.value
@@ -98,6 +102,16 @@ module Catalog
         .returns(Response.success(product))
 
       ::V1::Product.any_instance.stubs(:fulfillment_service).returns(fulfillment_service_mock)
+    end
+
+    def stub_fulfillment_service_catalog_request
+      stub_request(:get, "https://distribudiet.net/catalogo/archivos/PRESTA_C_lB6W_2_art_total.csv")
+        .with(body: {})
+        .to_return(
+          status: 200,
+          body: File.read(file_fixture("raw_catalog.csv")),
+          headers: {}
+        )
     end
 
     def expected_audit_message(product_id)

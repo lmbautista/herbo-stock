@@ -56,7 +56,7 @@ class CatalogLoaderJob < ApplicationJob
   end
 
   def load_catalog
-    Catalog::Loader.new(LOCAL_PATH, shop.id, product_ids).call
+    Catalog::Loader.new(shop.id, product_ids).call
   end
 
   def response_failure(record)
@@ -65,7 +65,4 @@ class CatalogLoaderJob < ApplicationJob
 
     Response.failure(error_message)
   end
-
-  # Temporal path that would be replaced by the provider dynamic URL
-  LOCAL_PATH = "/Users/lmbautista/Desktop/Herbomadrid/catalog-raw.csv"
 end
