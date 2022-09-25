@@ -8,5 +8,9 @@
   <td><%= I18n.l(audit.started_at, format: :long) if audit.started_at.present? %></td>
   <td><%= I18n.l(audit.succeeded_at, format: :long) if audit.succeeded_at.present? %></td>
   <td><%= I18n.l(audit.failed_at, format: :long) if audit.failed_at.present? %></td>
-  <td style="width: 35rem; max-height: 100px; overflow: auto"><%= audit.message&.html_safe %></td>
+  <td>
+    <div style="width: 35rem; max-height: 100px; overflow: auto">
+      <%= audit.message&.html_safe %>
+    </div>
+  </td>
 </tr>
