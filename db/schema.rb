@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_27_144437) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_25_103600) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "audits", force: :cascade do |t|
     t.string "operation_id", null: false
     t.text "raw_params", null: false
@@ -26,7 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_27_144437) do
   end
 
   create_table "catalog_loader_schedulers", force: :cascade do |t|
-    t.integer "shop_id", null: false
+    t.bigint "shop_id", null: false
     t.string "time_unit", null: false
     t.integer "time_amount", null: false
     t.datetime "created_at", null: false
@@ -46,8 +49,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_27_144437) do
   end
 
   create_table "v1_product_external_resources", force: :cascade do |t|
-    t.integer "v1_product_id", null: false
-    t.integer "external_id"
+    t.bigint "v1_product_id", null: false
+    t.bigint "external_id"
     t.string "kind"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -85,7 +88,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_27_144437) do
     t.float "cantidad_medida", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "shop_id", null: false
+    t.bigint "shop_id", null: false
     t.index ["shop_id"], name: "index_v1_products_on_shop_id"
   end
 

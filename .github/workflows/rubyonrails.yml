@@ -21,6 +21,24 @@ jobs:
       SHOP: herbomadrid-test.myshopify.com
       SCOPES: write_products,write_customers,write_draft_orders
       HOST: https://f761-82-158-184-94.ngrok.io
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -34,7 +52,7 @@ jobs:
           bundler-cache: true
       # Add or replace database setup steps here
       - name: Set up database schema
-        run: bin/rails db:schema:load
+        run: bin/rails db:exists && bin/rails db:migrate || bin/rails db:setup
       # Add or replace test runners here
       - name: Run tests
         run: bin/rake

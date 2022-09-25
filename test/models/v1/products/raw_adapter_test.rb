@@ -6,7 +6,7 @@ module V1
   module Products
     class RawAdapterTest < ActiveSupport::TestCase
       test "#payload" do
-        shop = create(:shop)
+        shop = create(:shop, id: 1)
         expected_payload = "97c12336d8f1691a7b35517d2951f0f9"
         raw_adapter = RawAdapter.new(data, shop.id)
         payload = raw_adapter.payload

@@ -5,21 +5,28 @@
 #   gem "sqlite3"
 #
 default: &default
-  adapter: sqlite3
+  adapter: postgresql
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: 127.0.0.1
+  port: 5432
+  username: <%= ENV['HERBOSTOCK_POSTGRES_USER'] %>
+  password: <%= ENV['HERBOSTOCK_POSTGRES_PASSWORD'] %>
   timeout: 5000
 
 development:
   <<: *default
-  database: db/development.sqlite3
+  database: herbostock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: db/test.sqlite3
+  database: herbostock
+  user: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  url: <%= ENV['DATABASE_URL'] %>
+  database: herbostock
