@@ -27,11 +27,11 @@ module Shopify
       end
 
       def username
-        Rails.application.credentials.dig(:distribudiet, :username)
+        ENV.fetch("DISTRIBUDIET_USER")
       end
 
       def password
-        Rails.application.credentials.dig(:distribudiet, :password)
+        ENV.fetch("DISTRIBUDIET_PASSWORD")
       end
 
       SOURCES = {

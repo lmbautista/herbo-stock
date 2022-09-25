@@ -25,6 +25,8 @@ jobs:
       POSTGRES_PORT: 5432
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      DISTRIBUDIET_USER: herbomadrid
+      DISTRIBUDIET_PASSWORD: 3132lkZ1
     services:
       postgres:
         image: postgres
