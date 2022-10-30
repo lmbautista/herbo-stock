@@ -24,6 +24,10 @@ class Audit < ApplicationRecord
   validates :succeeded_at, presence: true, if: :succeeded?
   validates :failed_at, presence: true, if: :failed?
 
+  # Workaround till we learn how to schedule tasks in Heroku
+  # This ugly thing should be forbidden
+  after_commit :clean_up_old_records, on: :create
+
   def shop
     @shop ||= Shop.find_by(shopify_domain: shop_domain)
   end
@@ -58,5 +62,17 @@ class Audit < ApplicationRecord
     self.message = message
 
     failed!
+  end
+
+  private
+
+  AUDITS_LIMIT = 1000
+  private_constant :AUDITS_LIMIT
+
+  def clean_up_old_records
+    audits_total = Audit.count(:id)
+    return if audits_total <= AUDITS_LIMIT
+
+    Audit.order(created_at: :asc).limit(1).destroy_all
   end
 end

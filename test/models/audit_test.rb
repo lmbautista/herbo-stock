@@ -72,15 +72,28 @@ class AuditTest < ActiveSupport::TestCase
   end
 
   test "shopify_domain is required" do
-    webhook = build(:audit, shop_domain: nil)
+    audit = build(:audit, shop_domain: nil)
 
-    assert webhook.invalid?
-    assert webhook.errors.added?(:shop_domain, :blank)
+    assert audit.invalid?
+    assert audit.errors.added?(:shop_domain, :blank)
   end
 
   test "#shop" do
-    webhook = create(:audit)
+    audit = create(:audit)
 
-    assert webhook.shop.persisted?
+    assert audit.shop.persisted?
+  end
+
+  test "clean up old records" do
+    Audit.send(:remove_const, "AUDITS_LIMIT")
+    Audit.send(:const_set, "AUDITS_LIMIT", 1)
+    shop = create(:shop, shopify_domain: "whatever.com")
+    cleaned_up_audit = create(:audit, shop_domain: shop.shopify_domain)
+    audit = create(:audit)
+
+    audits = Audit.all
+
+    assert_includes audits, audit
+    assert_not_includes audits, cleaned_up_audit
   end
 end
