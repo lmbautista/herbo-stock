@@ -43,7 +43,6 @@ module Shopify
       filtered_products.each do |row_data|
         refresh_product_stock(row_data)
           .and_then { |product| set_inventory_level_with_response(product) }
-          .and_then { |product| add_success(product) }
       end
 
       Response.success(resume.to_sentence)
@@ -74,12 +73,10 @@ module Shopify
     def set_inventory_level_with_response(product) # rubocop:disable Naming/AccessorMethodName
       product.fulfillment_service
         .set_inventory_level(product.external_id, product.disponible)
-    end
-
-    def add_success(product)
-      message = "#{product.class}##{product.id} refreshed successfully"
-
-      resume << message
+        .and_then do |message|
+          resume << "#{message} for product with SKU #{product.sku}"
+          Response.success(product)
+        end
     end
 
     def fulfillment_service

@@ -22,9 +22,9 @@ module Shopify
       shop = create(:shop)
       product = create(:v1_product, shop: shop, sku: "8888")
       external_id = create(:v1_product_external_resource, product: product).external_id
-      expected_success_message = "#{product.class}##{product.id} refreshed successfully"
+      expected_success_message = "Inventory set successfully for product with SKU #{product.sku}"
 
-      mock_product_fulfillment_service(external_id, product.disponible, product)
+      mock_product_fulfillment_service(external_id, product.disponible)
       stub_fulfillment_service_catalog_request
 
       response = RefreshStock.new(shop_domain: shop.shopify_domain, skus: [product.sku]).call
@@ -46,12 +46,12 @@ module Shopify
 
     private
 
-    def mock_product_fulfillment_service(external_id, _available, product)
+    def mock_product_fulfillment_service(external_id, _available)
       fulfillment_service_mock = mock
       fulfillment_service_mock
         .expects(:set_inventory_level)
         .with(external_id, 24)
-        .returns(Response.success(product))
+        .returns(Response.success("Inventory set successfully"))
 
       ::V1::Product.any_instance.stubs(:fulfillment_service).returns(fulfillment_service_mock)
     end
