@@ -109,6 +109,12 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
+    database_cleaner (2.0.1)
+      database_cleaner-active_record (~> 2.0.0)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     debug (1.5.0)
       irb (>= 1.3.6)
       reline (>= 0.2.7)
@@ -181,6 +187,8 @@ GEM
     mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
     minitest (5.16.2)
+    minitest-hooks (1.5.0)
+      minitest (> 5.3)
     mocha (1.14.0)
     msgpack (1.5.2)
     multi_xml (0.6.0)
@@ -373,6 +381,7 @@ DEPENDENCIES
   bootstrap (~> 5.1.3)
   byebug
   capybara
+  database_cleaner
   debug
   dotenv-rails
   factory_bot_rails
@@ -380,6 +389,8 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   kaminari
+  minitest
+  minitest-hooks
   mocha
   pg
   puma (~> 5.0)
