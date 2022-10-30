@@ -58,7 +58,7 @@ module Shopify
     end
 
     def refresh_product_stock(row_data)
-      product = V1::Product.find_by(sku: row_data["sku"])
+      product = V1::Product.find_by(sku: row_data["sku"], shop: shop)
 
       if product.blank?
         error_message = "Product with SKU #{row_data["sku"]} not found"
