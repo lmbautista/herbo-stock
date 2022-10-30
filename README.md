@@ -38,6 +38,11 @@ We keep up-to-date each product of the catalog through the following **Shopify**
 * **Shopify** requests by default for an availability update each hour where all the products are updated. The request is done agains an specific endpoint.
 * **Shopify** communicates once a fulfillment order is created (once an order is processed and archived). Then, the application updates the product in **Shopify** and the app itself. The request is done through a webhook
 
+### Shopify stock synchronization
+
+**Shopify** fetches each hour the fulfillment service stock from our app. This request schedules an async job to refresh the whole products stock from our fulfillment service.
+This process is lighter than loading the whole catalog, so we ensure **Shopify** will have the most fresh stock from our application.
+
 ## Additional features
 
 * All the actions are internally audited to keep tracking of them.
