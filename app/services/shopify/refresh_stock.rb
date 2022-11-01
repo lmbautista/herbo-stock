@@ -43,6 +43,7 @@ module Shopify
       filtered_products.each do |row_data|
         refresh_product_stock(row_data)
           .and_then { |product| set_inventory_level_with_response(product) }
+          .and_then { |product| update_shopify_product(product) }
       end
 
       Response.success(resume.to_sentence)
@@ -71,12 +72,21 @@ module Shopify
     end
 
     def set_inventory_level_with_response(product) # rubocop:disable Naming/AccessorMethodName
+      return Response.success(product) unless product.disponible_previously_changed?
+
       product.fulfillment_service
         .set_inventory_level(product.external_id, product.disponible)
         .and_then do |message|
           resume << "#{message} for product with SKU #{product.sku}"
           Response.success(product)
         end
+    end
+
+    def update_shopify_product(product)
+      return Response.success(product) unless product.disponible_previously_changed?
+
+      product.shopify_adapter.to_product.save_with_response
+        .on_failure { |error| resume << "Cannot upsert Shopify product: #{error}" }
     end
 
     def fulfillment_service

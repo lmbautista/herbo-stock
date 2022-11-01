@@ -4,6 +4,8 @@ require "test_helper"
 
 module Shopify
   class RefreshStockTest < ActiveSupport::TestCase
+    include FulfillmentServiceHelper
+
     test "has audit" do
       assert_includes RefreshStock.included_modules, WithAudit
     end
@@ -24,13 +26,18 @@ module Shopify
       external_id = create(:v1_product_external_resource, product: product).external_id
       expected_success_message = "Inventory set successfully for product with SKU #{product.sku}"
 
+      expected_shopify_response = Response.success(Shopify::Product.new(id: external_id))
+      stub_shopify_product(expected_shopify_response)
+
       mock_product_fulfillment_service(external_id, product.disponible)
       stub_fulfillment_service_catalog_request
 
-      response = RefreshStock.new(shop_domain: shop.shopify_domain, skus: [product.sku]).call
+      with_mocked_fulfillment_service(shop) do
+        response = RefreshStock.new(shop_domain: shop.shopify_domain, skus: [product.sku]).call
 
-      assert response.success?
-      assert_includes response.value, expected_success_message
+        assert response.success?
+        assert_includes response.value, expected_success_message
+      end
     end
 
     test "fails when product does not exists" do
@@ -64,6 +71,12 @@ module Shopify
           body: File.read(file_fixture("refresh_stock.csv")),
           headers: {}
         )
+    end
+
+    def stub_shopify_product(response)
+      ::Shopify::Product.any_instance
+        .stubs(:save_with_response)
+        .returns(response)
     end
   end
 end
