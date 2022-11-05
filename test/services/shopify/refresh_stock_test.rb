@@ -40,17 +40,6 @@ module Shopify
       end
     end
 
-    test "fails when product does not exists" do
-      expected_error_message = "Product with SKU 8888 not found"
-      shop = create(:shop)
-      stub_fulfillment_service_catalog_request
-
-      response = RefreshStock.new(shop_domain: shop.shopify_domain, skus: ["8888"]).call
-
-      assert response.success?
-      assert_includes response.value, expected_error_message
-    end
-
     private
 
     def mock_product_fulfillment_service(external_id, _available)

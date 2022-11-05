@@ -44,6 +44,7 @@ module Shopify
         refresh_product_stock(row_data)
           .and_then { |product| set_inventory_level_with_response(product) }
           .and_then { |product| update_shopify_product(product) }
+          .on_failure { return Response.success("Ok") }
       end
 
       Response.success(resume.to_sentence)
@@ -63,7 +64,6 @@ module Shopify
 
       if product.blank?
         error_message = "Product with SKU #{row_data["sku"]} not found"
-        resume << error_message
         Response.failure(error_message)
       else
         product.disponible = row_data["disponible"]
