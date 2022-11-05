@@ -47,9 +47,10 @@ module V1
 
         if product.present?
           product.assign_attributes(**payload)
+          product.has_been_updated! if product.changed?
           product
         else
-          V1::Product.new(payload)
+          V1::Product.new(**payload)
         end
       end
 

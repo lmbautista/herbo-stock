@@ -32,7 +32,22 @@ module V1
 
         assert product.valid?
         assert product.persisted?
+        assert product.has_been_updated?
         assert_equal product.id, original_product.id
+      end
+
+      test "#find_or_build_v1_product find and update product without changes" do
+        shop = create(:shop)
+        original_product = create(:v1_product, id: 1003, shop_id: shop.id)
+        raw_adapter = RawAdapter.new(data, shop.id)
+        product = raw_adapter.find_or_build_v1_product
+
+        assert product.valid?
+        assert product.persisted?
+        assert product.has_been_updated?
+        assert_equal product.id, original_product.id
+        assert product.save
+        assert_not raw_adapter.find_or_build_v1_product.has_been_updated?
       end
 
       private
