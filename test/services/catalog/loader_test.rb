@@ -51,7 +51,7 @@ module Catalog
 
         assert response.success?
         assert V1::ProductExternalResource.exists?(external_id: external_id)
-        assert Audit.exists?(message: "")
+        assert Audit.exists?(message: "No changes were applied")
       end
     end
 
@@ -66,7 +66,7 @@ module Catalog
         response = Loader.new(shop.id, 1004).call
 
         assert response.success?
-        assert Audit.exists?(message: "")
+        assert Audit.exists?(message: "No changes were applied")
       end
     end
 

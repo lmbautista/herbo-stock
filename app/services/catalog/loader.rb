@@ -18,7 +18,7 @@ module Catalog
       with_audit(operation_id: operation_id, params: params, shop: Shop.find(shop_id)) do
         load_fulfillment_service_products
           .and_then { load_products }
-          .and_then { Response.success(resume.to_sentence.presence || "") }
+          .and_then { Response.success(resume.to_sentence.presence || "No changes were applied") }
       end
     end
 
