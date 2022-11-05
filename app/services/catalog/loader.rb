@@ -18,7 +18,7 @@ module Catalog
       with_audit(operation_id: operation_id, params: params, shop: Shop.find(shop_id)) do
         load_fulfillment_service_products
           .and_then { load_products }
-          .and_then { Response.success(resume.to_sentence) }
+          .and_then { Response.success(resume.to_sentence.presence || "") }
       end
     end
 
@@ -85,6 +85,8 @@ module Catalog
     end
 
     def upsert_shopify_product(product)
+      return Response.success(product) unless product.has_been_updated?
+
       product.shopify_adapter.to_product.save_with_response
         .on_failure { |error| resume << "Cannot upsert Shopify product: #{error}" }
         .and_then { |shopify_product| save_shopify_product_id(product, shopify_product) }
@@ -100,6 +102,7 @@ module Catalog
     end
 
     def set_inventory_level_with_response(product) # rubocop:disable Naming/AccessorMethodName
+      return Response.success(product) unless product.has_been_updated?
       return Response.success(product) if product.external_id.blank?
 
       product.fulfillment_service.set_inventory_level(product.external_id, product.disponible)

@@ -21,6 +21,7 @@ module Catalog
       mock_product_loader(product)
       mock_product_fulfillment_service(external_id, product.disponible, product)
       stub_fulfillment_service_catalog_request
+      product.expects(:has_been_updated?).twice.returns(true)
 
       assert_difference "Audit.succeeded.count", +1 do
         with_mocked_fulfillment_service(shop) do
@@ -30,6 +31,27 @@ module Catalog
           assert V1::ProductExternalResource.exists?(external_id: external_id)
           assert Audit.exists?(message: expected_audit_message(product.id))
         end
+      end
+    end
+
+    test "success when nothing changes" do
+      shop = create(:shop)
+      product = create(:v1_product, shop: shop)
+      external_id = 7_734_581_887_222
+      create(:v1_product_external_resource, product: product, external_id: external_id)
+      expected_shopify_response = Response.success(Shopify::Product.new(id: external_id))
+
+      stub_shopify_product(expected_shopify_response)
+      mock_product_loader(product)
+      stub_fulfillment_service_catalog_request
+      product.expects(:has_been_updated?).twice.returns(false)
+
+      assert_difference "Audit.succeeded.count", +1 do
+        response = Loader.new(shop.id).call
+
+        assert response.success?
+        assert V1::ProductExternalResource.exists?(external_id: external_id)
+        assert Audit.exists?(message: "")
       end
     end
 
@@ -58,6 +80,7 @@ module Catalog
       stub_shopify_product(expected_shopify_response)
       mock_product_loader(product)
       stub_fulfillment_service_catalog_request
+      product.expects(:has_been_updated?).once.returns(true)
 
       assert_difference "Audit.succeeded.count", +1 do
         with_mocked_fulfillment_service(shop) do
@@ -85,13 +108,13 @@ module Catalog
         .returns(response)
     end
 
-    def mock_product_loader(product)
+    def mock_product_loader(product, times: 1)
       response = Response.success("Product created", product)
 
       product_loader_mock = mock
-      product_loader_mock.expects(:call).returns(response)
+      product_loader_mock.expects(:call).times(times).returns(response)
 
-      Product::Loader.expects(:new).returns(product_loader_mock)
+      Product::Loader.expects(:new).times(times).returns(product_loader_mock)
     end
 
     def mock_product_fulfillment_service(external_id, available, product)
