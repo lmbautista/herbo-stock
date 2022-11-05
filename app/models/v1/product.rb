@@ -41,6 +41,14 @@ module V1
     validates :cantidad_medida, presence: true,
                                 numericality: { only_float: true, greater_than_or_equal_to: 0.0 }
 
+    def has_been_updated!
+      @has_been_updated = !has_been_updated
+    end
+
+    def has_been_updated?
+      has_been_updated
+    end
+
     def shopify_adapter
       @shopify_adapter ||= V1::Products::Shopify::Adapter.new(self)
     end
@@ -53,5 +61,9 @@ module V1
     end
 
     delegate :external_id, to: :find_or_initialize_external_product
+
+    private
+
+    attr_reader :has_been_updated
   end
 end

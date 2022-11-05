@@ -352,5 +352,18 @@ module V1
 
       assert product.external_id
     end
+
+    test "#has_been_updated!" do
+      product = create(:v1_product)
+
+      assert product.has_been_updated!
+    end
+
+    test "#has_been_updated?" do
+      product = create(:v1_product)
+
+      assert product.has_been_updated!
+      assert product.has_been_updated?
+    end
   end
 end
