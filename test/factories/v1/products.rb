@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :v1_product, class: "V1::Product" do
-    id { 1 }
     shop { build(:shop) }
     sku { "MyString" }
     definicion { "MyString" }
