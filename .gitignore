@@ -29,6 +29,7 @@
 /tmp/storage/*
 !/tmp/storage/
 !/tmp/storage/.keep
+.byebug_history
 
 /public/assets
 
