@@ -18,7 +18,7 @@ class RefreshStockJobTest < ActiveJob::TestCase
 
     Shopify::RefreshStock
       .expects(:new)
-      .with(**job_params.symbolize_keys)
+      .with(*job_params.values)
       .returns(refresher_mock)
 
     RefreshStockJob.new.perform(**job_params)

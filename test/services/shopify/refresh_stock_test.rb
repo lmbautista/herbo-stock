@@ -14,7 +14,7 @@ module Shopify
       shop = create(:shop)
       stub_fulfillment_service_catalog_request
 
-      response = RefreshStock.new(shop_domain: shop.shopify_domain, skus: ["xxx"]).call
+      response = RefreshStock.new(shop.shopify_domain, ["xxx"]).call
 
       assert response.success?
       assert_empty response.value
@@ -33,7 +33,7 @@ module Shopify
       stub_fulfillment_service_catalog_request
 
       with_mocked_fulfillment_service(shop) do
-        response = RefreshStock.new(shop_domain: shop.shopify_domain, skus: [product.sku]).call
+        response = RefreshStock.new(shop.shopify_domain, [product.sku]).call
 
         assert response.success?
         assert_includes response.value, expected_success_message

@@ -4,7 +4,7 @@ module Shopify
   class RefreshStock
     include WithAudit
 
-    def initialize(shop_domain:, skus:)
+    def initialize(shop_domain, skus = [])
       @shop_domain = shop_domain
       @skus = skus
       @resume = []

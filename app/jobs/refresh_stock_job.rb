@@ -6,6 +6,6 @@ class RefreshStockJob < ApplicationJob
     shop_domain = args.fetch("shop_domain")
     skus = args.fetch("skus", [])
 
-    Shopify::RefreshStock.new(shop_domain: shop_domain, skus: skus).call
+    Shopify::RefreshStock.new(shop_domain, skus).call
   end
 end
