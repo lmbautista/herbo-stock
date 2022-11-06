@@ -9,6 +9,9 @@ class CatalogLoaderScheduler < ApplicationRecord
     TIME_UNIT_DAYS = "days"
   ].freeze
 
+  DEFAULT_TIME_UNIT = TIME_UNIT_HOURS
+  DEFAULT_TIME_AMOUNT = 8
+
   enum time_unit: { minutes: TIME_UNIT_MINUTES, hours: TIME_UNIT_HOURS, days: TIME_UNIT_DAYS }
 
   validates :next_scheduled_at, presence: true, if: :process_id?
