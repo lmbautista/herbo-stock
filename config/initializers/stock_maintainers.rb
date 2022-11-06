@@ -4,7 +4,7 @@ module StockMaintainers
   module_function
 
   def load_catalog_loader_scheduler
-    Shop.all.each_with_index do |shop, idx|
+    ::Shop.all.each_with_index do |shop, idx|
       scheduler = find_or_create_default_catalog_loader_scheduler(shop)
       next if scheduler.blank?
 
@@ -17,6 +17,20 @@ module StockMaintainers
         process_id: process_id,
         shop_domain: shop.shopify_domain
       )
+    end
+  end
+
+  def load_stock_archiver
+    ::Shop.all.each_with_index do |shop, idx|
+      ArchiveStockJob.set(wait: (5 * idx).minutes)
+        .perform_later(shop_domain: shop.shopify_domain)
+    end
+  end
+
+  def load_stock_refresher
+    ::Shop.all.each_with_index do |shop, idx|
+      RefreshStockJob.set(wait: (5 * idx).minutes)
+        .perform_later(shop_domain: shop.shopify_domain)
     end
   end
 
@@ -37,5 +51,7 @@ end
 if defined?(Rails::Server)
   Rails.application.config.after_initialize do
     StockMaintainers.load_catalog_loader_scheduler
+    StockMaintainers.load_stock_archiver
+    StockMaintainers.load_stock_refresher
   end
 end
