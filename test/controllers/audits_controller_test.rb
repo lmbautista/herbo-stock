@@ -16,6 +16,7 @@ class AuditsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "success filtering by shop" do
+    skip "Flaky test"
     shop = create(:shop, shopify_domain: "test-2.shopify.shop")
     audit_one = create(:audit)
     audit_two = create(:audit, shop_domain: audit_one.shop.shopify_domain)
