@@ -40,11 +40,17 @@ We keep up-to-date each product of the catalog through the following **Shopify**
 
 ### Shopify stock synchronization
 
-**Shopify** fetches each hour the fulfillment service stock from our app. This request schedules an async job to refresh the whole products stock from our fulfillment service.
-This process is lighter than loading the whole catalog, so we ensure **Shopify** will have the most fresh stock from our application.
+The app loads the following async processes once the server is up:
+
+* Process `catalog loader`: it represents the heaviest process to load the entire the fulfillment service catalog.
+* Process `stock refresher`: it represents a light process to load the fulfillment service stock.
+* Process `stock archiver`: it represents a light process to disable those products which are no longer part of the fulfillment service catalog.
+
+Then, **Shopify** fetches each hour the fulfillment service stock from our app to get the fresh picture of our stock.
 
 ## Additional features
 
 * All the actions are internally audited to keep tracking of them.
 * Once a product got no availability, we temporarilly mark it as `archived`.
+* Once a product `archived` is refilled, we mark it as `active` again.
 * Once the application is uninstalled, a webhook will manage the cleaning-up of the affected shop internally.
