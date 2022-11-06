@@ -7,5 +7,6 @@ class RefreshStockJob < ApplicationJob
     skus = args.fetch("skus", [])
 
     Shopify::RefreshStock.new(shop_domain, skus).call
+    RefreshStockJob.set(wait: 1.hour).perform_later(**args)
   end
 end

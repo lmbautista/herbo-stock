@@ -21,6 +21,10 @@ class RefreshStockJobTest < ActiveJob::TestCase
       .with(*job_params.values)
       .returns(refresher_mock)
 
-    RefreshStockJob.new.perform(**job_params)
+    assert_enqueued_with job: ::RefreshStockJob,
+                         args: [job_params],
+                         queue: "default" do
+      RefreshStockJob.new.perform(**job_params)
+    end
   end
 end
