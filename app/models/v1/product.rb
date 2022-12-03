@@ -41,6 +41,14 @@ module V1
     validates :cantidad_medida, presence: true,
                                 numericality: { only_float: true, greater_than_or_equal_to: 0.0 }
 
+    def has_been_created!
+      @has_been_created = !has_been_created
+    end
+
+    def has_been_created?
+      has_been_created
+    end
+
     def has_been_updated!
       @has_been_updated = !has_been_updated
     end
@@ -64,6 +72,6 @@ module V1
 
     private
 
-    attr_reader :has_been_updated
+    attr_reader :has_been_updated, :has_been_created
   end
 end

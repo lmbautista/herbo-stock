@@ -48,10 +48,11 @@ module V1
         if product.present?
           product.assign_attributes(**payload)
           product.has_been_updated! if product.changed?
-          product
         else
-          V1::Product.new(**payload)
+          product = V1::Product.new(**payload)
+          product.has_been_created!
         end
+        product
       end
 
       private
