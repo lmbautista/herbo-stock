@@ -67,4 +67,31 @@ class ResponseTest < ActiveSupport::TestCase
     assert response.failure?
     assert_equal 99, response.value
   end
+
+  test "ensure executed when success" do
+    expected_ensure = "ensure"
+    response = Response.success(:ok).ensure { expected_ensure }
+
+    assert_equal expected_ensure, response
+  end
+
+  test "ensure executed if failure" do
+    expected_ensure = "ensure"
+    response = Response.failure(:ko).ensure { expected_ensure }
+
+    assert_equal expected_ensure, response
+  end
+
+  test "ensure executed chaining responses" do
+    step_one = Response.failure(:ko)
+    step_two = Response.success(:ok)
+    expected_response = Response.success("ensure")
+
+    response = step_one
+      .and_then { step_two }
+      .ensure { expected_response }
+
+    assert response.success?
+    assert_equal expected_response, response
+  end
 end

@@ -22,6 +22,10 @@ class Response
     self
   end
 
+  def ensure
+    yield(self)
+  end
+
   def self.success(value, resource = nil)
     new(success: true, value: value, resource: resource)
   end
