@@ -240,7 +240,7 @@ module V1
         test "#image_src" do
           stub_download_image
 
-          expected_image_src = "https://herbo-stock.herokuapp.com/public/01003.jpg"
+          expected_image_src = "https://#{ENV.fetch("HEROKU_APP_DOMAIN")}/01003.jpg"
           product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
@@ -249,7 +249,7 @@ module V1
         end
 
         test "#public_image_url" do
-          expected_public_image_url = "https://#{ENV.fetch("HEROKU_APP_DOMAIN")}/public/01003.jpg"
+          expected_public_image_url = "https://#{ENV.fetch("HEROKU_APP_DOMAIN")}/01003.jpg"
           product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
@@ -365,7 +365,7 @@ module V1
         test "#to_csv" do
           stub_download_image
 
-          expected_payload = "e8632ff1ad384db2939259b4552b872b"
+          expected_payload = "2c7d8ac8bdaaaf5f8252366b26b8c697"
           product = create(:v1_product, **product_attrs)
 
           with_mocked_fulfillment_service(product.shop) do
