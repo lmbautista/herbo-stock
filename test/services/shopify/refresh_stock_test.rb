@@ -6,6 +6,10 @@ module Shopify
   class RefreshStockTest < ActiveSupport::TestCase
     include FulfillmentServiceHelper
 
+    teardown do
+      File.delete("public/MyString") if File.exist?("public/MyString")
+    end
+
     test "has audit" do
       assert_includes RefreshStock.included_modules, WithAudit
     end
@@ -25,6 +29,8 @@ module Shopify
       product = create(:v1_product, shop: shop, sku: "8888")
       external_id = create(:v1_product_external_resource, product: product).external_id
       expected_success_message = "Inventory set successfully for product with SKU #{product.sku}"
+
+      stub_download_image
 
       expected_shopify_response = Response.success(Shopify::Product.new(id: external_id))
       stub_shopify_product(expected_shopify_response)
@@ -66,6 +72,13 @@ module Shopify
       ::Shopify::Product.any_instance
         .stubs(:save_with_response)
         .returns(response)
+    end
+
+    def stub_download_image
+      fixture_picture = File.read(file_fixture("01003.jpg"))
+
+      stub_request(:get, "http://mystring/")
+        .to_return(status: 200, body: fixture_picture, headers: {})
     end
   end
 end

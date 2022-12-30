@@ -90,6 +90,10 @@ module Catalog
       product.shopify_adapter.to_product.save_with_response
         .on_failure { |error| resume << "Cannot upsert Shopify product: #{error}" }
         .and_then { |shopify_product| save_shopify_product_id(product, shopify_product) }
+        .ensure do
+          product.shopify_adapter.unstaged_local_image
+          Response.success(product)
+        end
     end
 
     def save_shopify_product_id(product, shopify_product)

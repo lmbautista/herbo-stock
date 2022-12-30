@@ -7,6 +7,10 @@ module Catalog
     include ActiveJob::TestHelper
     include FulfillmentServiceHelper
 
+    teardown do
+      File.delete("public/MyString") if File.exist?("public/MyString")
+    end
+
     test "has audit" do
       assert_includes Loader.included_modules, WithAudit
     end
@@ -17,6 +21,7 @@ module Catalog
       external_id = 7_734_581_887_222
       expected_shopify_response = Response.success(Shopify::Product.new(id: external_id))
 
+      stub_download_image
       stub_shopify_product(expected_shopify_response)
       mock_product_loader(product)
       mock_product_fulfillment_service(external_id, product.disponible, product)
@@ -77,10 +82,12 @@ module Catalog
       expected_message = "Cannot upsert Shopify product: #{error_message}"
 
       expected_shopify_response = Response.failure(error_message)
+
+      stub_download_image
       stub_shopify_product(expected_shopify_response)
       mock_product_loader(product)
       stub_fulfillment_service_catalog_request
-      product.expects(:has_been_updated?).once.returns(true)
+      product.expects(:has_been_updated?).twice.returns(true)
 
       assert_difference "Audit.succeeded.count", +1 do
         with_mocked_fulfillment_service(shop) do
@@ -135,6 +142,13 @@ module Catalog
           body: File.read(file_fixture("raw_catalog.csv")),
           headers: {}
         )
+    end
+
+    def stub_download_image
+      fixture_picture = File.read(file_fixture("01003.jpg"))
+
+      stub_request(:get, "http://mystring/")
+        .to_return(status: 200, body: fixture_picture, headers: {})
     end
 
     def expected_audit_message(product_id)
