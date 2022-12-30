@@ -242,6 +242,44 @@ module V1
           assert_equal expected_image_src, adapter.image_src
         end
 
+        test "#public_image_url" do
+          expected_public_image_url = "https://#{ENV.fetch("HEROKU_APP_DOMAIN")}/public/01003.jpg"
+          product = create(:v1_product, **product_attrs)
+          adapter = Adapter.new(product)
+
+          assert adapter.public_image_url
+          assert_equal expected_public_image_url, adapter.public_image_url
+        end
+
+        test "#download_image" do
+          expected_local_image_path = "public/01003.jpg"
+          fixture_picture = File.read(file_fixture("01003.jpg"))
+          product = create(:v1_product, **product_attrs)
+          adapter = Adapter.new(product)
+
+          stub_request(:get, "https://distribudiet.net/webstore/images/01003.jpg")
+            .to_return(status: 200, body: fixture_picture, headers: {})
+
+          assert_match expected_local_image_path, adapter.local_image.path
+          assert adapter.download_image
+        end
+
+        test "#unstaged_local_image" do
+          fixture_picture = File.read(file_fixture("01003.jpg"))
+          local_image_path = File.join(Rails.public_path, "test.jpg")
+          local_image = File.open(local_image_path, "wb+")
+          local_image.write fixture_picture
+          local_image.close
+
+          product = create(:v1_product, **product_attrs)
+          adapter = Adapter.new(product)
+
+          adapter.stubs(:local_image).returns(local_image)
+
+          assert adapter.unstaged_local_image
+          assert_not File.exist?(local_image_path)
+        end
+
         test "#image_position" do
           expected_image_position = 1
           product = create(:v1_product, **product_attrs)

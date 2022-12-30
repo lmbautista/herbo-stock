@@ -123,6 +123,34 @@ module V1
           product.imagen
         end
 
+        def public_image_url
+          return @public_image_url if defined?(@public_image_url)
+
+          image_name = File.basename(product.imagen)
+          app_url = "https://#{ENV.fetch("HEROKU_APP_DOMAIN")}"
+          @public_image_url = File.join(app_url, "public", image_name)
+        end
+
+        def download_image
+          response = RestClient.get(product.imagen)
+          local_image.write response.body
+          local_image.close
+
+          true
+        end
+
+        def local_image
+          return @local_image if defined?(@local_image)
+
+          image_name = File.basename(product.imagen)
+          image_path = File.join(Rails.public_path, image_name)
+          @local_image = File.open(image_path, "wb+")
+        end
+
+        def unstaged_local_image
+          File.delete(local_image.path) if File.exist?(local_image.path)
+        end
+
         def image_position
           1
         end

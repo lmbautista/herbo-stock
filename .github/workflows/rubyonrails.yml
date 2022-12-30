@@ -27,6 +27,7 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       DISTRIBUDIET_USER: herbomadrid
       DISTRIBUDIET_PASSWORD: 3132lkZ1
+      HEROKU_APP_DOMAIN: herbo-stock.herokuapp.com
     services:
       postgres:
         image: postgres
