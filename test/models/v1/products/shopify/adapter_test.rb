@@ -8,6 +8,10 @@ module V1
       class AdapterTest < ActiveSupport::TestCase
         include FulfillmentServiceHelper
 
+        teardown do
+          File.delete("public/01003.jpg") if File.exist?("public/01003.jpg")
+        end
+
         test "#handle" do
           expected_handle = "copos-de-avena-1000gr"
           product = create(:v1_product, **product_attrs)
@@ -234,7 +238,9 @@ module V1
         end
 
         test "#image_src" do
-          expected_image_src = "https://distribudiet.net/webstore/images/01003.jpg"
+          stub_download_image
+
+          expected_image_src = "https://herbo-stock.herokuapp.com/public/01003.jpg"
           product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
 
@@ -253,12 +259,10 @@ module V1
 
         test "#download_image" do
           expected_local_image_path = "public/01003.jpg"
-          fixture_picture = File.read(file_fixture("01003.jpg"))
+          stub_download_image
+
           product = create(:v1_product, **product_attrs)
           adapter = Adapter.new(product)
-
-          stub_request(:get, "https://distribudiet.net/webstore/images/01003.jpg")
-            .to_return(status: 200, body: fixture_picture, headers: {})
 
           assert_match expected_local_image_path, adapter.local_image.path
           assert adapter.download_image
@@ -359,7 +363,9 @@ module V1
         end
 
         test "#to_csv" do
-          expected_payload = "7cd77d3a0d3a57a5d1f3be55015ed83b"
+          stub_download_image
+
+          expected_payload = "e8632ff1ad384db2939259b4552b872b"
           product = create(:v1_product, **product_attrs)
 
           with_mocked_fulfillment_service(product.shop) do
@@ -370,6 +376,8 @@ module V1
         end
 
         test "#to_product" do
+          stub_download_image
+
           product = create(:v1_product, **product_attrs)
           create(:v1_product_external_resource, product: product)
 
@@ -467,6 +475,13 @@ module V1
             unidad_medida: "kilo",
             cantidad_medida: 1
           }
+        end
+
+        def stub_download_image
+          fixture_picture = File.read(file_fixture("01003.jpg"))
+
+          stub_request(:get, "https://distribudiet.net/webstore/images/01003.jpg")
+            .to_return(status: 200, body: fixture_picture, headers: {})
         end
       end
     end

@@ -120,7 +120,10 @@ module V1
         end
 
         def image_src
-          product.imagen
+          return @image_src if defined?(@image_src)
+
+          download_image
+          @image_src = public_image_url
         end
 
         def public_image_url
