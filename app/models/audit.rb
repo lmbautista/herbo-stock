@@ -26,7 +26,7 @@ class Audit < ApplicationRecord
 
   # Workaround till we learn how to schedule tasks in Heroku
   # This ugly thing should be forbidden
-  after_commit :clean_up_old_records, on: :create
+  after_commit :clean_up_old_records
 
   def shop
     @shop ||= Shop.find_by(shopify_domain: shop_domain)
